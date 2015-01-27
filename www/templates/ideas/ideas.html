@@ -7,9 +7,9 @@
   </ion-nav-buttons>
   <ion-content>
     <ion-list>
-      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="idea in ideas" type="item-text-wrap" href="#/tab/ideas/{{idea.id}}">
-        <img ng-src="{{idea.face}}">
-        <h2>{{idea.title}}</h2>
+      <ion-item class="item-remove-animate item-icon-left item-icon-right" ng-repeat="idea in ideas" type="item-text-wrap" href="#/tab/ideas/{{idea.id}}">
+        <i class="icon ion-{{getCategory(idea.category).icon}}" style="color:{{getCategory(idea.category).color}};"></i>
+        <h2>{{idea.title}} ({{idea.id}})</h2>
         <p>{{idea.description}}</p>
         <i class="icon ion-chevron-right icon-accessory"></i>
       </ion-item>
