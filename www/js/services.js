@@ -21,24 +21,22 @@ angular.module('starter.services', [])
 
 
 
-.factory('Ideas', ['$window', function($window) {
+.factory('Ideas', function($window) {
 
   var initialIdeas = [{title: 'My first idea', description: 'something genius', id:1, category: 1}];
-  if (!$window.localStorage['ideas'] || true){$window.localStorage['ideas'] = JSON.stringify(initialIdeas)}
+  
+  var ideas = initialIdeas;
 
   return {
     all: function() {
-      var ideas = JSON.parse($window.localStorage['ideas']);
       return ideas.sort(function(i1,i2){
         return (new Date(i1.date) - new Date(i2.date)) ? -1 : (new Date(i2.date) - new Date(i1.date)) ? 1 : 0;
       });
     },
     remove: function(idea) {
-      var ideas = JSON.parse($window.localStorage['ideas']);
-      $window.localStorage['ideas'] = JSON.stringify(ideas.splice(ideas.indexOf(idea), 1));
+      ideas.splice(ideas.indexOf(idea), 1);
     },
     get: function(ideaId) {
-      var ideas = JSON.parse($window.localStorage['ideas']);
       for (var i = 0; i < ideas.length; i++) {
         if (ideas[i].id === parseInt(ideaId)) {
           return ideas[i];
@@ -47,15 +45,14 @@ angular.module('starter.services', [])
       return null;
     },
     new: function(idea){
-      var ideas = JSON.parse($window.localStorage['ideas']);
       idea.id = getNextId(ideas);
-      $window.localStorage['ideas'] = JSON.stringify(ideas.unshift(idea));
+      ideas.unshift(idea);
       return idea;
     },
   }
-}])
+})
 
-.factory('Categories', ['$window', function($window) {
+.factory('Categories', function() {
 
   // set up initial empty array of ideas
   var initialCategories = [
@@ -65,39 +62,36 @@ angular.module('starter.services', [])
     {name: 'Software Projects', icon: 'code-working', color: '#66cc33', id:3},
   ];
 
-  if (!$window.localStorage['categories'] || true){$window.localStorage['categories'] = JSON.stringify(initialCategories)}
+  var categories = initialCategories;
 
   return {
     all: function() {
-      var categories = JSON.parse($window.localStorage['categories']);
       return categories.sort(function(a, b) {return (a['name'] < b['name']) ? 1 : (a['name'] > b['name']) ? -1 : 0});
     },
     remove: function(category) {
-      var categories = JSON.parse($window.localStorage['categories']);
-      $window.localStorage['categories'] = JSON.stringify(categories.splice(categories.indexOf(category), 1));
+      categories.splice(categories.indexOf(category), 1);
     },
     get: function(categoryId) {
-      var categories = JSON.parse($window.localStorage['categories']);
+      // console.log(categories, categoryId)
       for (var i = 0; i < categories.length; i++) {
-        if (categories.id === parseInt(categoryId)) {
+        if (categories[i].id === parseInt(categoryId)) {
           return categories[i];
         }
       }
       return null;
     },
     new: function(category){
-      var categories = JSON.parse($window.localStorage['categories']);
       var found = categories.filter(function(item){
         return (item.name==category.name);
       })
       if (!found || !found.length){
         category.id = getNextId(categories);
-        $window.localStorage['categories'] = JSON.parse(categories.unshift(category));
+        categories.unshift(category);
         return category;
       }
     },
   }
-}])
+})
 
 
 // gets next id from an array of items
