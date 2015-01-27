@@ -1,0 +1,35 @@
+label.error .input-label{
+	color:red;
+}
+label.noError .input-label{
+	color:#387ef5;
+}
+
+.colorRow{
+	overflow:hidden;
+	padding-right:16px;
+}
+
+.colorRow .colorBox{
+	height:20px;
+	padding:0;
+	width:12%;
+	float:left;
+	margin:0 0.25%;
+	border:1px solid transparent;
+	border-radius:3px;
+	box-sizing:border-box;
+	opacity:0.9;
+}
+
+.colorRow .colorBox.current{
+	opacity:1;
+}
+.colorRow .colorBox i{
+	font-size:10px;
+	line-height:18px;
+	height:20px;
+	padding:0;
+	width:100%;
+	color:white;
+}

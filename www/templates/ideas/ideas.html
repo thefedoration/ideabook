@@ -1,0 +1,20 @@
+<ion-view view-title="Ideas">
+  <ion-nav-buttons side="right">
+    <a class="button back-button buttons button-clear header-item" href="#/tab/ideas/new">
+      <span class="back-text positive">new</span>
+      <i class="icon ion-ios7-plus-empty positive"></i>
+    </a>
+  </ion-nav-buttons>
+  <ion-content>
+    <ion-list>
+      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="idea in ideas" type="item-text-wrap" href="#/tab/ideas/{{idea.id}}">
+        <img ng-src="{{idea.face}}">
+        <h2>{{idea.title}}</h2>
+        <p>{{idea.description}}</p>
+        <i class="icon ion-chevron-right icon-accessory"></i>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>
+
+
