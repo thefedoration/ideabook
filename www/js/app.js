@@ -47,13 +47,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
   //     }
   //   }
   // })
-
   .state('tab.ideas', {
       url: '/ideas',
       views: {
         'tab-ideas': {
           templateUrl: 'templates/ideas/ideas.html',
-          controller: 'IdeasCtrl'
+          controller: 'IdeasAllCtrl'
         }
       }
     })
@@ -71,7 +70,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
       url: '/ideas/:ideaId',
       views: {
         'tab-ideas': {
-          templateUrl: 'templates/ideas/idea.html',
+          templateUrl: 'templates/ideas/idea-detail.html',
           controller: 'IdeaDetailCtrl'
         }
       }

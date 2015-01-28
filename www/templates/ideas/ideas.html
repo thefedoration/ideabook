@@ -1,20 +1,47 @@
-<ion-view view-title="Ideas">
+<ion-view view-title="Ideas" style="margin-top:43px;">
+  <ion-nav-buttons side="left">
+    <button class="button button-icon" ng-click="openSidemenu()">
+      <i class="icon ion-navicon"></i>
+    </button>
+  </ion-nav-buttons>
   <ion-nav-buttons side="right">
     <a class="button back-button buttons button-clear header-item" href="#/tab/ideas/new">
       <span class="back-text positive">new</span>
       <i class="icon ion-ios7-plus-empty positive"></i>
     </a>
   </ion-nav-buttons>
-  <ion-content>
-    <ion-list>
-      <ion-item class="item-remove-animate item-icon-left item-icon-right" ng-repeat="idea in ideas" type="item-text-wrap" href="#/tab/ideas/{{idea.id}}">
-        <i class="icon ion-{{getCategory(idea.category).icon}}" style="color:{{getCategory(idea.category).color}};"></i>
-        <h2>{{idea.title}} ({{idea.id}})</h2>
-        <p>{{idea.description}}</p>
-        <i class="icon ion-chevron-right icon-accessory"></i>
-      </ion-item>
-    </ion-list>
-  </ion-content>
+
+  <ion-side-menus>
+
+    <!-- Left menu -->
+    <ion-side-menu side="left" class="dark">
+      <ion-header-bar class="bar-dark">
+        <h1 class="title">Categories</h1>
+        <button class="button button-icon ion-plus" ng-click="">
+        </button>
+      </ion-header-bar>
+      <ion-content scroll="false">
+        <ion-list>
+          <ion-item ng-repeat="category in categories" ng-click="" ng-class="{active:activeCategory==category}">
+            {{category.name}}
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ion-side-menu>
+
+  
+
+    <ion-side-menu-content>
+      <ion-list>
+        <ion-item class="item-remove-animate item-icon-left item-icon-right" ng-repeat="idea in ideas" type="item-text-wrap" href="#/tab/ideas/{{idea.id}}">
+          <i class="icon ion-{{getCategory(idea.category).icon}}" style="color:{{getCategory(idea.category).color}};"></i>
+          <h2>{{idea.title}} ({{idea.id}})</h2>
+          <p>{{idea.description}}</p>
+          <i class="icon ion-chevron-right icon-accessory"></i>
+        </ion-item>
+      </ion-list>
+    </ion-side-menu-content>
+
+  </ion-side-menus>
+  
 </ion-view>
-
-

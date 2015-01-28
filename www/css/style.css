@@ -52,3 +52,49 @@ label.noError .input-label{
 
 
 
+/* dark list */
+.dark {
+  background-color: #325287 !important;
+  color: #ffffff;
+}
+.dark .bar-dark{
+  background-color: #1C3F7A !important;
+  color: #ffffff;
+}
+.dark .scroll-content {
+  background-color: #325287 !important;
+}
+.dark .item {
+  background-color: #325287;
+  border:none;
+  border-bottom:  1px solid rgba(255,255,255,0.25);
+  padding: 10px;
+  font-size:12px;
+  color:white;
+  max-height: none;
+}
+.dark .item:first-child {
+  /*border-top: 1px solid rgba(255,255,255,0.25);*/
+}
+.dark .item:last-child {
+  border-bottom: 1px solid rgba(255,255,255,0.25);
+}
+.dark .item.current {
+  background-color: #262727 !important;
+  border-top: 1px solid #464646 !important;
+  border-bottom: 2px solid #333333 !important;
+}
+.dark .item.current p, .dark .item.current h3 {
+  opacity: .7;
+}
+.dark h2,
+.dark h3,
+.dark p {
+  color: #F0F1F1;
+}
+
+.dark-head {
+  text-decoration: none;
+}
+/* dark list */
+
