@@ -1,4 +1,4 @@
-angular.module('starter.services', [])
+angular.module('ideabook.services', [])
 // angular.module('ionic.utils', [])
 
 // .factory('$localstorage', ['$window', function($window) {
