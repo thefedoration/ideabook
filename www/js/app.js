@@ -1,13 +1,21 @@
 // Ionic Starter App
 
+var firebaseUrl = "https://sweltering-heat-2752.firebaseio.com";
+
+function onDeviceReady() {
+    angular.bootstrap(document, ["ideabook"]);
+}
+document.addEventListener("deviceready", onDeviceReady, false);
+
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('ideabook', ['ionic', 'ideabook.controllers', 'ideabook.services'])
+angular.module('ideabook', ['ionic', 'ideabook.controllers', 'ideabook.services', 'firebase'])
 
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform, $rootScope, $location, Auth, $ionicLoading) {
+
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -18,6 +26,36 @@ angular.module('ideabook', ['ionic', 'ideabook.controllers', 'ideabook.services'
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
     }
+
+    $rootScope.firebaseUrl = firebaseUrl;
+    $rootScope.displayName = null;
+
+    Auth.$onAuth(function (authData) {
+        if (authData) {
+            console.log("Logged in as:", authData.uid);
+        } else {
+            console.log("Logged out");
+            $ionicLoading.hide();
+            $location.path('/login');
+        }
+    });
+
+    $rootScope.logout = function () {
+        console.log("Logging out from the app");
+        $ionicLoading.show({
+            template: 'Logging Out...'
+        });
+        Auth.$unauth();
+    }
+
+    $rootScope.$on("$stateChangeError", function (event, toState, toParams, fromState, fromParams, error) {
+        // We can catch the error thrown when the $requireAuth promise is rejected
+        // and redirect the user back to the home page
+        if (error === "AUTH_REQUIRED") {
+            $location.path("/login");
+        }
+    });
+
   });
 })
 
@@ -29,11 +67,30 @@ angular.module('ideabook', ['ionic', 'ideabook.controllers', 'ideabook.services'
   // Each state's controller can be found in controllers.js
   $stateProvider
 
+  .state('login', { 
+    url: "/login", 
+    templateUrl: "templates/login/login.html", 
+    controller: 'LoginCtrl',
+    resolve: { 
+      "currentAuth": ["Auth", function (Auth) { 
+        console.log(Auth)
+        return Auth.$waitForAuth(); 
+      }] 
+    }
+  })
+
+
   // setup an abstract state for the tabs directive
-    .state('tab', {
+  .state('tab', {
     url: "/tab",
     abstract: true,
-    templateUrl: "templates/tabs.html"
+    templateUrl: "templates/tabs.html",
+    resolve: {
+      "currentAuth": ["Auth", function (Auth) {
+        console.log(Auth)
+        return Auth.$requireAuth();
+      }]
+    }
   })
 
   // Each tab has its own nav history stack:
@@ -106,6 +163,6 @@ angular.module('ideabook', ['ionic', 'ideabook.controllers', 'ideabook.services'
   });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/ideas');
+  $urlRouterProvider.otherwise('/login');
 
 });

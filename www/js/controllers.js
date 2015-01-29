@@ -1,43 +1,85 @@
 angular.module('ideabook.controllers', [])
 
-.controller('DashCtrl', function($scope) {})
-
-// .controller('IdeasAllCtrl', function($scope, $ionicSideMenuDelegate, $ionicModal, Categories) {
-//   	$scope.categories = Categories.all();
-
-// 	/*
-// 	**	NEW CATEGORY STUFF
-// 	*/
-// 	$ionicModal.fromTemplateUrl('new-category.html', {
-// 	scope: $scope,
-// 		animation: 'slide-in-up'
-// 	}).then(function(modal) {
-// 		$scope.modal = modal;
+// .controller('LoginCtrl', function ($scope, $ionicModal, $state) { 
+// 	console.log('Login Controller Initialized'); 
+// 	$ionicModal.fromTemplateUrl('templates/login/signup.html', { 
+// 		scope: $scope 
+// 	}).then(function (modal) { 
+// 		$scope.modal = modal; 
 // 	});
-// 	$scope.saveCategory = function(category){
-// 		category = Categories.new(category);
-// 		if ($scope.idea){
-// 			$scope.idea.category = category.id;
-// 		}
-// 		$scope.closeModal();
-// 	}
-// 	$scope.setCategoryColor = function(c) {
-// 		$scope.category.color=c;
-// 	}
-// 	$scope.setCategoryIcon = function(i) {
-// 		$scope.category.icon=i;
-// 	}
-// 	$scope.openCategoryModal = function() {
-// 		$scope.category = {};
-// 		$scope.categoryColors = ['#e5e5e5','#145fd7','#43cee6','#66cc33','#f0b840','#ef4e3a','#8a6de9','#444'];
-// 		$scope.categoryIcons = ['home','search','heart','settings','email','paper-airplane','upload','medkit','map','person-add','chatbox-working','beer','pizza','power','camera','image','flash','bug','music-note','mic-a','bag','card','cash','pricetags','happy','sad','trophy','beaker','earth','planet','bonfire','leaf','model-s','plane','ios7-cart','ios7-home','ios7-bookmarks','ios7-americanfootball', 'ios7-paw', 'ios7-eye'];
-// 		$scope.modal.show();
-// 	};
-// 	$scope.closeCategoryModal = function() {
-// 	    $scope.modal.hide();
-// 	};
-// 	// end of new category stuff
-// })
+// 	$scope.createUser = function (user) { 
+// 		console.log('user created!')
+// 	} 
+// 	$scope.signIn = function () { 
+// 		$state.go('tab.ideas'); 
+// 	} 
+// }) 
+
+.controller('LoginCtrl', function ($scope, $ionicModal, $state, $firebaseAuth, $ionicLoading, $rootScope) { 
+	console.log('Login Controller Initialized'); 
+	var ref = new Firebase($scope.firebaseUrl); 
+	var auth = $firebaseAuth(ref); 
+
+	$ionicModal.fromTemplateUrl('templates/signup.html', { 
+		scope: $scope 
+	}).then(function (modal) { 
+		$scope.modal = modal; 
+	}); 
+
+	$scope.createUser = function (user) { 
+		console.log("Create User Function called"); 
+		if (user && user.email && user.password && user.displayname) { 
+			$ionicLoading.show({ 
+				template: 'Signing Up...' 
+			}); 
+			auth.$createUser({ 
+				email: user.email, 
+				password: user.password 
+			}).then(function (userData) { 
+				alert("User created successfully!"); 
+				ref.child("users").child(userData.uid).set({ 
+					email: user.email, 
+					displayName: user.displayname 
+				}); 
+				$ionicLoading.hide(); 
+				$scope.modal.hide(); 
+			}).catch(function (error) { 
+				alert("Error: " + error); 
+				$ionicLoading.hide(); 
+			}); 
+		} else alert("Please fill all details"); 
+	} 
+	
+	$scope.signIn = function (user) { 
+		if (user && user.email && user.pwdForLogin) { 
+			$ionicLoading.show({ 
+				template: 'Signing In...' 
+			}); 
+			auth.$authWithPassword({ 
+				email: user.email, 
+				password: user.pwdForLogin 
+			}).then(function (authData) { 
+				console.log("Logged in as:" + authData.uid); 
+				ref.child("users").child(authData.uid).once('value', function (snapshot) { 
+					var val = snapshot.val(); 
+					// To Update AngularJS $scope either use $apply or $timeout 
+					$scope.$apply(function () { 
+						$rootScope.displayName = val; 
+					}); 
+				}); 
+				$ionicLoading.hide(); 
+				$state.go('tab.rooms'); 
+			}).catch(function (error) { 
+				alert("Authentication failed:" + error.message); 
+				$ionicLoading.hide(); 
+			}); 
+		} else alert("Please enter email and password both"); 
+	} 
+})
+
+
+
+.controller('DashCtrl', function($scope) {})
 
 .controller('IdeasAllCtrl', function($scope, $ionicSideMenuDelegate, $ionicModal, Ideas, Categories) {
   	$scope.ideas = Ideas.all();
