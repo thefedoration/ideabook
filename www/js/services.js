@@ -31,7 +31,6 @@ angular.module('ideabook.services', ['firebase'])
 .factory('Ideas', function($window) {
 
   var initialIdeas = [{title: 'My first idea', description: 'something genius', id:1, category: 1}];
-  
   var ideas = initialIdeas;
 
   return {

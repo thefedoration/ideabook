@@ -7,18 +7,13 @@ function onDeviceReady() {
 }
 document.addEventListener("deviceready", onDeviceReady, false);
 
-// angular.module is a global place for creating, registering and retrieving Angular modules
-// 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
-// the 2nd parameter is an array of 'requires'
-// 'starter.services' is found in services.js
-// 'starter.controllers' is found in controllers.js
-angular.module('ideabook', ['ionic', 'ideabook.controllers', 'ideabook.services', 'firebase'])
+
+angular.module('ideabook', ['ionic', 'firebase', 'ideabook.controllers', 'ideabook.services'])
 
 .run(function($ionicPlatform, $rootScope, $location, Auth, $ionicLoading) {
 
   $ionicPlatform.ready(function() {
-    // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-    // for form inputs)
+    // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard for form inputs)
     if (window.cordova && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
     }
@@ -28,11 +23,11 @@ angular.module('ideabook', ['ionic', 'ideabook.controllers', 'ideabook.services'
     }
 
     $rootScope.firebaseUrl = firebaseUrl;
-    $rootScope.displayName = null;
 
     Auth.$onAuth(function (authData) {
         if (authData) {
             console.log("Logged in as:", authData.uid);
+            $location.path('/tab/ideas');
         } else {
             console.log("Logged out");
             $ionicLoading.hide();
@@ -73,7 +68,6 @@ angular.module('ideabook', ['ionic', 'ideabook.controllers', 'ideabook.services'
     controller: 'LoginCtrl',
     resolve: { 
       "currentAuth": ["Auth", function (Auth) { 
-        console.log(Auth)
         return Auth.$waitForAuth(); 
       }] 
     }
@@ -87,7 +81,6 @@ angular.module('ideabook', ['ionic', 'ideabook.controllers', 'ideabook.services'
     templateUrl: "templates/tabs.html",
     resolve: {
       "currentAuth": ["Auth", function (Auth) {
-        console.log(Auth)
         return Auth.$requireAuth();
       }]
     }

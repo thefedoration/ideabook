@@ -1,26 +1,11 @@
 angular.module('ideabook.controllers', [])
 
-// .controller('LoginCtrl', function ($scope, $ionicModal, $state) { 
-// 	console.log('Login Controller Initialized'); 
-// 	$ionicModal.fromTemplateUrl('templates/login/signup.html', { 
-// 		scope: $scope 
-// 	}).then(function (modal) { 
-// 		$scope.modal = modal; 
-// 	});
-// 	$scope.createUser = function (user) { 
-// 		console.log('user created!')
-// 	} 
-// 	$scope.signIn = function () { 
-// 		$state.go('tab.ideas'); 
-// 	} 
-// }) 
-
 .controller('LoginCtrl', function ($scope, $ionicModal, $state, $firebaseAuth, $ionicLoading, $rootScope) { 
 	console.log('Login Controller Initialized'); 
-	var ref = new Firebase($scope.firebaseUrl); 
+	var ref = new Firebase($rootScope.firebaseUrl); 
 	var auth = $firebaseAuth(ref); 
 
-	$ionicModal.fromTemplateUrl('templates/signup.html', { 
+	$ionicModal.fromTemplateUrl('templates/login/signup.html', { 
 		scope: $scope 
 	}).then(function (modal) { 
 		$scope.modal = modal; 
@@ -28,7 +13,7 @@ angular.module('ideabook.controllers', [])
 
 	$scope.createUser = function (user) { 
 		console.log("Create User Function called"); 
-		if (user && user.email && user.password && user.displayname) { 
+		if (user && user.email && user.password) { 
 			$ionicLoading.show({ 
 				template: 'Signing Up...' 
 			}); 
@@ -39,7 +24,6 @@ angular.module('ideabook.controllers', [])
 				alert("User created successfully!"); 
 				ref.child("users").child(userData.uid).set({ 
 					email: user.email, 
-					displayName: user.displayname 
 				}); 
 				$ionicLoading.hide(); 
 				$scope.modal.hide(); 
@@ -59,16 +43,16 @@ angular.module('ideabook.controllers', [])
 				email: user.email, 
 				password: user.pwdForLogin 
 			}).then(function (authData) { 
-				console.log("Logged in as:" + authData.uid); 
+				console.log("Logged in as: " + authData.uid); 
 				ref.child("users").child(authData.uid).once('value', function (snapshot) { 
 					var val = snapshot.val(); 
 					// To Update AngularJS $scope either use $apply or $timeout 
 					$scope.$apply(function () { 
-						$rootScope.displayName = val; 
+						// apply values to scope here?
 					}); 
 				}); 
 				$ionicLoading.hide(); 
-				$state.go('tab.rooms'); 
+				$state.go('tab.ideas'); 
 			}).catch(function (error) { 
 				alert("Authentication failed:" + error.message); 
 				$ionicLoading.hide(); 
@@ -84,6 +68,7 @@ angular.module('ideabook.controllers', [])
 .controller('IdeasAllCtrl', function($scope, $ionicSideMenuDelegate, $ionicModal, Ideas, Categories) {
   	$scope.ideas = Ideas.all();
   	$scope.categories = Categories.all();
+  	$scope.filteredIdeas = $scope.ideas;
 
 	// stringifys date for input
 	$scope.toStringDate = function(date){
@@ -96,6 +81,17 @@ angular.module('ideabook.controllers', [])
 
 	$scope.openSidemenu = function(){
 		$ionicSideMenuDelegate.toggleLeft();
+	}
+
+	$scope.filterCategory = function(category){
+		if (category){
+			$scope.filteredIdeas = ($scope.ideas).filter(function(idea){
+				return (idea.category==category.id)
+			})
+		} else {
+			$scope.filteredIdeas = $scope.ideas;
+		}
+		$scope.activeCategory = category;
 	}
 })
 
@@ -176,8 +172,10 @@ angular.module('ideabook.controllers', [])
 
 })
 
-.controller('AccountCtrl', function($scope) {
-  $scope.settings = {
-    enableFriends: true
-  };
+.controller('AccountCtrl', function($scope, $firebaseAuth, $rootScope) {
+	
+
+	$scope.settings = {
+		enableFriends: true
+	};
 });

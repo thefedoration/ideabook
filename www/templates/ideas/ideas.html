@@ -1,7 +1,7 @@
 <ion-view view-title="Ideas" style="margin-top:43px;">
   <ion-nav-buttons side="left">
     <button class="button button-icon" ng-click="openSidemenu()">
-      <i class="icon ion-navicon"></i>
+      <i class="icon ion-ios7-settings" ng-class="{balanced:activeCategory}"></i>
     </button>
   </ion-nav-buttons>
   <ion-nav-buttons side="right">
@@ -17,12 +17,14 @@
     <ion-side-menu side="left" class="dark">
       <ion-header-bar class="bar-dark">
         <h1 class="title">Categories</h1>
-        <button class="button button-icon ion-plus" ng-click="">
-        </button>
       </ion-header-bar>
       <ion-content scroll="false">
-        <ion-list>
-          <ion-item ng-repeat="category in categories" ng-click="" ng-class="{active:activeCategory==category}">
+        <ion-list class="category-sidebar">
+          <ion-item ng-click="filterCategory(undefined)" class="item-icon-left" ng-class="{active:!activeCategory}">
+            <i class="icon ion-earth"></i>All Ideas
+          </ion-item>
+          <ion-item ng-repeat="category in categories" ng-click="filterCategory(category)" class="item-icon-left" ng-class="{active:activeCategory==category}" ng-if="category.id!==0">
+            <i class="icon ion-{{category.icon}}"></i>
             {{category.name}}
           </ion-item>
         </ion-list>
@@ -33,7 +35,7 @@
 
     <ion-side-menu-content>
       <ion-list>
-        <ion-item class="item-remove-animate item-icon-left item-icon-right" ng-repeat="idea in ideas" type="item-text-wrap" href="#/tab/ideas/{{idea.id}}">
+        <ion-item class="item-remove-animate item-icon-left item-icon-right" ng-repeat="idea in filteredIdeas" type="item-text-wrap" href="#/tab/ideas/{{idea.id}}">
           <i class="icon ion-{{getCategory(idea.category).icon}}" style="color:{{getCategory(idea.category).color}};"></i>
           <h2>{{idea.title}}</h2>
           <p>{{idea.description}}</p>
