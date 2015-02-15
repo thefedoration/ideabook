@@ -1,7 +1,6 @@
 angular.module('ideabook.controllers', [])
 
 .controller('LoginCtrl', function ($scope, $ionicModal, $state, $firebaseAuth, $ionicLoading, $rootScope) { 
-	console.log('Login Controller Initialized'); 
 	var ref = new Firebase($rootScope.firebaseUrl); 
 	var auth = $firebaseAuth(ref); 
 
@@ -43,7 +42,6 @@ angular.module('ideabook.controllers', [])
 				email: user.email, 
 				password: user.pwdForLogin 
 			}).then(function (authData) { 
-				console.log("Logged in as: " + authData.uid); 
 				ref.child("users").child(authData.uid).once('value', function (snapshot) { 
 					var val = snapshot.val(); 
 					// To Update AngularJS $scope either use $apply or $timeout 
@@ -65,11 +63,8 @@ angular.module('ideabook.controllers', [])
 
 .controller('DashCtrl', function($scope) {})
 
-.controller('IdeasAllCtrl', function($scope, $ionicSideMenuDelegate, $ionicModal, Ideas, Categories) {
-  	$scope.ideas = Ideas.all();
-  	$scope.categories = Categories.all();
-  	$scope.filteredIdeas = $scope.ideas;
-
+.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSideMenuDelegate, $ionicModal, Ideas, Categories) {
+  	/****  actions ****/
 	// stringifys date for input
 	$scope.toStringDate = function(date){
 		if (date){return date.yyyymmdd();}
@@ -83,6 +78,11 @@ angular.module('ideabook.controllers', [])
 		$ionicSideMenuDelegate.toggleLeft();
 	}
 
+	$scope.fetchIdeas = function(){
+		$scope.ideas = Ideas.allForUser($rootScope.userId);
+		$scope.filteredIdeas = $scope.ideas;
+	}
+
 	$scope.filterCategory = function(category){
 		if (category){
 			$scope.filteredIdeas = ($scope.ideas).filter(function(idea){
@@ -93,6 +93,23 @@ angular.module('ideabook.controllers', [])
 		}
 		$scope.activeCategory = category;
 	}
+
+	// makes sure that we get the ideas when userId comes in
+	$scope.$watch('userId', function() {
+       $scope.fetchIdeas()
+   	});
+
+   	$scope.$watch('filteredIdeas', function() {
+   		$scope.filteredIdeas.$loaded().then(function() {
+   			setTimeout(function(){
+   				$scope.ideasLoaded = true;
+   			}, 100);
+	    });
+   	});
+
+	/****  init ****/
+	$scope.fetchIdeas()
+  	$scope.categories = Categories.all();
 })
 
 .controller('IdeaNewCtrl', function($scope, $stateParams, $ionicModal, $state, Ideas, Categories) {
@@ -160,8 +177,13 @@ angular.module('ideabook.controllers', [])
 	// end of new category stuff
 })
 
-.controller('IdeaDetailCtrl', function($scope, $stateParams, Ideas) {
-  $scope.idea = Ideas.get($stateParams.ideaId);
+.controller('IdeaDetailCtrl', function($scope, $state, $stateParams, Ideas) {
+  	$scope.idea = Ideas.get($stateParams.ideaId);
+
+  	$scope.deleteIdea = function(idea) {
+    	Ideas.remove(idea)
+    	$state.go('tab.ideas');
+	};
 })
 
 .controller('FriendsCtrl', function($scope) {

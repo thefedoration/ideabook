@@ -35,13 +35,25 @@
 
     <ion-side-menu-content>
       <ion-list>
-        <ion-item class="item-remove-animate item-icon-left item-icon-right" ng-repeat="idea in filteredIdeas" type="item-text-wrap" href="#/tab/ideas/{{idea.id}}">
+        <ion-item class="item-remove-animate item-icon-left item-icon-right" ng-repeat="idea in filteredIdeas | reverse" type="item-text-wrap" href="#/tab/ideas/{{idea.$id}}">
           <i class="icon ion-{{getCategory(idea.category).icon}}" style="color:{{getCategory(idea.category).color}};"></i>
           <h2>{{idea.title}}</h2>
           <p>{{idea.description}}</p>
           <i class="icon ion-chevron-right icon-accessory"></i>
         </ion-item>
       </ion-list>
+
+      <ion-pane ng-if="!ideas.length">
+        <div style="padding: 50px 20px;margin: 20px;" ng-if="!ideasLoaded">
+          <div ng-include src='"templates/partials/loader.html"'></div>
+        </div>
+        <div style="padding: 50px 20px;margin: 20px;" ng-if="ideasLoaded">
+          <h5 class="positive" style="text-align:center;">You have no ideas</h5>
+          <a href="#/tab/ideas/new" class="button button-block button-outline ion-ios7-lightbulb-outline button-positive">
+              Create one
+          </a>
+        </div>
+      </ion-pane>
     </ion-side-menu-content>
 
   </ion-side-menus>

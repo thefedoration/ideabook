@@ -1,0 +1,138 @@
+<style>
+	@-webkit-keyframes enter {
+	  0% {
+	    opacity: 0;
+	    top: -10px;
+	  }
+	  5% {
+	    opacity: 1;
+	    top: 0px;
+	  }
+	  50.9% {
+	    opacity: 1;
+	    top: 0px;
+	  }
+	  55.9% {
+	    opacity: 0;
+	    top: 10px;
+	  }
+	}
+	@keyframes enter {
+	  0% {
+	    opacity: 0;
+	    top: -10px;
+	  }
+	  5% {
+	    opacity: 1;
+	    top: 0px;
+	  }
+	  50.9% {
+	    opacity: 1;
+	    top: 0px;
+	  }
+	  55.9% {
+	    opacity: 0;
+	    top: 10px;
+	  }
+	}
+	@-moz-keyframes enter {
+	  0% {
+	    opacity: 0;
+	    top: -10px;
+	  }
+	  5% {
+	    opacity: 1;
+	    top: 0px;
+	  }
+	  50.9% {
+	    opacity: 1;
+	    top: 0px;
+	  }
+	  55.9% {
+	    opacity: 0;
+	    top: 10px;
+	  }
+	}
+	.loader {
+	  position: absolute;
+	  left: 50%;
+	  margin-left: -27.5px;
+	  margin-top: 10px;
+	}
+	.square {
+	  background: #387ef5;
+	  width: 15px;
+	  height: 15px;
+	  float: left;
+	  top: -10px;
+	  margin-right: 5px;
+	  margin-top: 5px;
+	  position: relative;
+	  opacity: 0;
+	  -webkit-animation: enter 3s infinite;
+	  animation: enter 3s infinite;
+	}
+	.enter {
+	  top: 0px;
+	  opacity: 1;
+	}
+	.square:nth-child(1) {
+	  -webkit-animation-delay: 0.6s;
+	  -moz-animation-delay: 0.6s;
+	  animation-delay: 0.6s;
+	}
+	.square:nth-child(2) {
+	  -webkit-animation-delay: 0.7s;
+	  -moz-animation-delay: 0.7s;
+	  animation-delay: 0.7s;
+	}
+	.square:nth-child(3) {
+	  -webkit-animation-delay: 0.8s;
+	  -moz-animation-delay: 0.8s;
+	  animation-delay: 0.8s;
+	  background: #fdc96f;
+	}
+	.square:nth-child(4) {
+	  -webkit-animation-delay: 0.3s;
+	  -moz-animation-delay: 0.3s;
+	  animation-delay: 0.3s;
+	}
+	.square:nth-child(5) {
+	  -webkit-animation-delay: 0.4s;
+	  -moz-animation-delay: 0.4s;
+	  animation-delay: 0.4s;
+	}
+	.square:nth-child(6) {
+	  -webkit-animation-delay: 0.5s;
+	  -moz-animation-delay: 0.5s;
+	  animation-delay: 0.5s;
+	}
+	.square:nth-child(8) {
+	  -webkit-animation-delay: 0.1s;
+	  -moz-animation-delay: 0.1s;
+	  animation-delay: 0.1s;
+	}
+	.square:nth-child(9) {
+	  -webkit-animation-delay: 0.2s;
+	  -moz-animation-delay: 0.2s;
+	  animation-delay: 0.2s;
+	}
+	.clear {
+	  clear: both;
+	}
+	.last {
+	  margin-right: 0;
+	}
+</style>
+<div class="loader">
+  <div class="square" ></div>
+  <div class="square"></div>
+  <div class="square last"></div>
+  <div class="square clear"></div>
+  <div class="square"></div>
+  <div class="square last"></div>
+  <div class="square clear"></div>
+  <div class="square "></div>
+  <div class="square last"></div>
+  <h5 class="positive" style="position:relative;top:5px;">loading...</h5>
+</div>

@@ -5,3 +5,10 @@ Date.prototype.yyyymmdd = function() {
 	var dd  = this.getDate().toString();
 	return yyyy + '-' + (mm[1]?mm:"0"+mm[0]) + '-' + (dd[1]?dd:"0"+dd[0]); // padding
 };
+
+// reverses angular ng-repeat (used to get newest first)
+ideabook.filter('reverse', function() {
+  return function(items) {
+    return items.slice().reverse();
+  };
+});

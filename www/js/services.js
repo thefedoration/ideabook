@@ -1,23 +1,5 @@
+
 angular.module('ideabook.services', ['firebase'])
-// angular.module('ionic.utils', [])
-
-// .factory('$localstorage', ['$window', function($window) {
-//   return {
-//     set: function(key, value) {
-//       $window.localStorage[key] = value;
-//     },
-//     get: function(key, defaultValue) {
-//       return $window.localStorage[key] || defaultValue;
-//     },
-//     setObject: function(key, value) {
-//       $window.localStorage[key] = JSON.stringify(value);
-//     },
-//     getObject: function(key) {
-//       return JSON.parse($window.localStorage[key] || '{}');
-//     }
-//   }
-// }]);
-
 
 .factory("Auth", ["$firebaseAuth", "$rootScope", 
   function ($firebaseAuth, $rootScope) { 
@@ -27,33 +9,28 @@ angular.module('ideabook.services', ['firebase'])
 ])
 
 
-
-.factory('Ideas', function($window) {
-
-  var initialIdeas = [{title: 'My first idea', description: 'something genius', id:1, category: 1}];
-  var ideas = initialIdeas;
+.factory('Ideas', function($window, $firebase, $rootScope) {
+  var ref = new Firebase($rootScope.firebaseUrl); 
+  var ideasRef = ref.child('ideas');
 
   return {
     all: function() {
-      return ideas.sort(function(i1,i2){
-        return (new Date(i1.date) - new Date(i2.date)) ? -1 : (new Date(i2.date) - new Date(i1.date)) ? 1 : 0;
-      });
+      return $firebase(ideasRef.orderByChild("created").limitToLast(20)).$asArray(); 
     },
-    remove: function(idea) {
-      ideas.splice(ideas.indexOf(idea), 1);
+    allForUser: function(userId) {
+      return $firebase(ideasRef.orderByChild("userId").startAt(userId).endAt(userId)).$asArray()
     },
     get: function(ideaId) {
-      for (var i = 0; i < ideas.length; i++) {
-        if (ideas[i].id === parseInt(ideaId)) {
-          return ideas[i];
-        }
-      }
-      return null;
+      return $firebase(ideasRef.child(ideaId)).$asObject();
+    },
+    remove: function(idea) {
+      return $firebase(ideasRef).$remove(idea.$id);
     },
     new: function(idea){
-      idea.id = getNextId(ideas);
-      ideas.unshift(idea);
-      return idea;
+      idea.userId = $rootScope.userId;
+      idea.date = idea.date.toDateString();
+      idea.created = (new Date).getTime();
+      return ideasRef.push(idea);
     },
   }
 })
@@ -78,7 +55,6 @@ angular.module('ideabook.services', ['firebase'])
       categories.splice(categories.indexOf(category), 1);
     },
     get: function(categoryId) {
-      // console.log(categories, categoryId)
       for (var i = 0; i < categories.length; i++) {
         if (categories[i].id === parseInt(categoryId)) {
           return categories[i];
