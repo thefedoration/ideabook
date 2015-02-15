@@ -1,84 +1,5 @@
-angular.module('ideabook.controllers', [])
-
-.controller('LoginCtrl', function ($scope, $ionicModal, $state, $firebaseAuth, $ionicLoading, $rootScope) { 
-	var ref = new Firebase($rootScope.firebaseUrl); 
-	var auth = $firebaseAuth(ref); 
-
-	$ionicModal.fromTemplateUrl('templates/login/signup.html', { 
-		scope: $scope 
-	}).then(function (modal) { 
-		$scope.modal = modal; 
-	}); 
-
-	$scope.createUser = function (user) { 
-		console.log("Create User Function called"); 
-		if (user && user.email && user.password) { 
-			$ionicLoading.show({ 
-				template: 'Signing Up...' 
-			}); 
-			auth.$createUser({ 
-				email: user.email, 
-				password: user.password 
-			}).then(function (userData) { 
-				alert("User created successfully!"); 
-				ref.child("users").child(userData.uid).set({ 
-					email: user.email, 
-				}); 
-
-				// creates initial category fixtures
-				$scope.createCategoryFixtures(userData.uid);
-				$ionicLoading.hide(); 
-				$scope.modal.hide(); 
-			}).catch(function (error) { 
-				alert("Error: " + error); 
-				$ionicLoading.hide(); 
-			}); 
-		} else alert("Please fill all details"); 
-	} 
-	
-	$scope.signIn = function (user) { 
-		if (user && user.email && user.pwdForLogin) { 
-			$ionicLoading.show({ 
-				template: 'Signing In...' 
-			}); 
-			auth.$authWithPassword({ 
-				email: user.email, 
-				password: user.pwdForLogin 
-			}).then(function (authData) { 
-				ref.child("users").child(authData.uid).once('value', function (snapshot) { 
-					var val = snapshot.val(); 
-					// To Update AngularJS $scope either use $apply or $timeout 
-					$scope.$apply(function () { 
-						// apply values to scope here?
-					}); 
-				}); 
-				$ionicLoading.hide(); 
-				$state.go('tab.ideas'); 
-			}).catch(function (error) { 
-				alert("Authentication failed:" + error.message); 
-				$ionicLoading.hide(); 
-			}); 
-		} else alert("Please enter email and password both"); 
-	} 
-
-	$scope.createCategoryFixtures = function(uid){
-		var initialCategories = [
-			{name: ' New Category', userId: uid},
-		    {name: 'Products', icon: 'wand', color: '#43cee6', userId: uid},
-		    {name: 'Businesses', icon: 'social-bitcoin', color: '#ef4e3a', userId: uid},
-		    {name: 'Software Projects', icon: 'code-working', color: '#66cc33', userId: uid},
-		];
-		initialCategories.forEach(function(category){
-			ref.child("categories").push(category); 
-		})
-	}
-})
-
-
-
-.controller('DashCtrl', function($scope) {})
-
-.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSideMenuDelegate, $ionicModal, Ideas, Categories) {
+var ideaControllers = angular.module('ideaControllers', []);
+ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSideMenuDelegate, $ionicModal, Ideas, Categories) {
   	/****  actions ****/
 	// stringifys date for input
 	$scope.toStringDate = function(date){
@@ -139,6 +60,7 @@ angular.module('ideabook.controllers', [])
 	$scope.fetchCategories()
 })
 
+
 .controller('IdeaNewCtrl', function($scope, $rootScope, $firebase, $stateParams, $ionicModal, $state, Ideas, Categories) {
 	$scope.idea = {'date': (new Date())};
 	$scope.categories = Categories.allForUser($rootScope.userId);
@@ -170,15 +92,12 @@ angular.module('ideabook.controllers', [])
 	    $scope.category = {};
 	});
 
-	/*
-	**	NEW CATEGORY STUFF
-	*/
-	$ionicModal.fromTemplateUrl('new-category.html', {
-	scope: $scope,
-		animation: 'slide-in-up'
-	}).then(function(modal) {
-		$scope.modal = modal;
-	});
+	$ionicModal.fromTemplateUrl('templates/ideas/category-new.html', { 
+		scope: $scope, animation: 'slide-in-up'
+	}).then(function (modal) { 
+		$scope.modal = modal; 
+	}); 
+
 	$scope.saveCategory = function(category){
   		var categoriesRef = (new Firebase($rootScope.firebaseUrl)).child('categories');
 
@@ -197,27 +116,35 @@ angular.module('ideabook.controllers', [])
 	};
 })
 
-.controller('IdeaDetailCtrl', function($scope, $state, $stateParams, Ideas) {
+
+.controller('IdeaDetailCtrl', function($scope, $state, $stateParams, Ideas, $ionicPopup, $ionicPopover) {
   	$scope.idea = Ideas.get($stateParams.ideaId);
 
   	$scope.deleteIdea = function(idea) {
-    	Ideas.remove(idea)
-    	$state.go('tab.ideas');
+		$ionicPopup.confirm({
+			title: 'Delete Idea',
+			template: 'Are you sure you want to delete this idea?'
+		}).then(function(res) {
+			if(res){
+				Ideas.remove(idea)
+    			$state.go('tab.ideas');
+			}
+		});
 	};
-})
 
-.controller('FriendsCtrl', function($scope) {
+	$ionicPopover.fromTemplateUrl('templates/ideas/idea-actions.html', {
+		scope: $scope,
+	}).then(function(popover) {
+		$scope.popover = popover;
+	});
 
-})
-
-.controller('FriendDetailCtrl', function($scope, $stateParams) {
-
-})
-
-.controller('AccountCtrl', function($scope, $firebaseAuth, $rootScope) {
-	
-
-	$scope.settings = {
-		enableFriends: true
+	$scope.openPopover = function($event) {
+		$scope.popover.show($event);
 	};
-});
+	$scope.closePopover = function() {
+		$scope.popover.hide();
+	}
+})
+
+
+

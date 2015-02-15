@@ -1,0 +1,35 @@
+<ion-modal-view>
+  <ion-header-bar>
+    <h1 class="title">New Category</h1>
+    <a class="button back-button buttons button-clear header-item" ng-click="modal.hide()">
+      <i class="icon ion-ios7-close-outline"></i>
+      <span>close</span>
+    </a>
+  </ion-header-bar>
+
+  <ion-content class="padding">
+    <div class="list">
+      <label class="item item-input item-stacked-label">
+        <span class="input-label positive">Name</span>
+        <input type="text" placeholder="Software Projects" ng-model="category.name">
+      </label>
+      <div class="item item-input item-stacked-label">
+        <span class="input-label positive">Color</span>
+        <div class="selectRow">
+          <button class="box" ng-repeat="c in categoryColors" style="background-color:{{c}};" ng-click="category.color=c" ng-class="{current: (category.color==c)}">
+            <i ng-if="category.color==c" class="icon ion-ios7-circle-filled"></i>
+          </button>
+        </div>
+      </div>
+      <div class="item item-input item-stacked-label">
+        <span class="input-label positive">Icon</span>
+        <div class="selectRow">
+          <button class="box big" ng-repeat="i in categoryIcons" ng-click="category.icon=i" ng-class="{current: (category.icon==i)}">
+            <i class="icon ion-{{i}}"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <button class="button button-block button-positive" ng-click="saveCategory(category)" ng-class="{disabled:!category.name || !category.color || !category.icon}">Save</button>
+  </ion-content>
+</ion-modal-view>

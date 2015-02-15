@@ -6,7 +6,16 @@ function onDeviceReady() {
 }
 document.addEventListener("deviceready", onDeviceReady, false);
 
-var ideabook = angular.module('ideabook', ['ionic', 'firebase', 'ideabook.controllers', 'ideabook.services'])
+
+var ideabook = angular.module('ideabook', [
+  'ionic', 
+  'firebase', 
+  'ideabook.services',
+  'loginControllers',
+  'ideaControllers',
+  'friendControllers',
+  'accountControllers',
+])
 .run(function($ionicPlatform, $rootScope, $location, Auth, $ionicLoading) {
 
   $rootScope.firebaseUrl = firebaseUrl;

@@ -1,13 +1,14 @@
-<ion-view view-title="{{idea.title}}">
+<ion-view view-title="Idea">
   <ion-nav-buttons side="right">
-    <a class="button back-button buttons button-clear header-item" ng-click="deleteIdea({{idea}})">
-      <span class="back-text positive">delete</span>
-    </a>
+    <button class="button button-icon" ng-click="openPopover($event)">
+      <i class="icon ion-navicon"></i>
+    </button>
   </ion-nav-buttons>
 
   <ion-content class="padding">
     <img ng-src="{{idea.face}}" style="width: 64px; height: 64px">
-    <h1>{{idea.id}}</h1>
+    <i class="icon ion-{{getCategory(idea.category).icon}}" style="color:{{getCategory(idea.category).color}};"></i>
+    <h2>{{idea.title}}</h2>
     <p>
       {{idea.description}}
     </p>
