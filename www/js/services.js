@@ -28,59 +28,46 @@ angular.module('ideabook.services', ['firebase'])
     },
     new: function(idea){
       idea.userId = $rootScope.userId;
+      idea.category = idea.category.$id;
       idea.date = idea.date.toDateString();
       idea.created = (new Date).getTime();
-      return ideasRef.push(idea);
+      return $firebase(ideasRef).$push(idea);
     },
   }
 })
 
-.factory('Categories', function() {
-
-  // set up initial empty array of ideas
-  var initialCategories = [
-    {name: ' New Category', id:0},
-    {name: 'Products', icon: 'wand', color: '#43cee6', id:1},
-    {name: 'Businesses', icon: 'social-bitcoin', color: '#ef4e3a', id:2},
-    {name: 'Software Projects', icon: 'code-working', color: '#66cc33', id:3},
-  ];
-
-  var categories = initialCategories;
+.factory('Categories', function($window, $q, $firebase, $rootScope) {
+  var ref = new Firebase($rootScope.firebaseUrl); 
+  var categoriesRef = ref.child('categories');
 
   return {
-    all: function() {
-      return categories.sort(function(a, b) {return (a['name'] < b['name']) ? 1 : (a['name'] > b['name']) ? -1 : 0});
+    all: function(userId) {
+      return $firebase(categoriesRef).$asArray()
     },
-    remove: function(category) {
-      categories.splice(categories.indexOf(category), 1);
+    allForUser: function(userId) {
+      return $firebase(categoriesRef.orderByChild("userId").startAt(userId).endAt(userId)).$asArray();
     },
     get: function(categoryId) {
-      for (var i = 0; i < categories.length; i++) {
-        if (categories[i].id === parseInt(categoryId)) {
-          return categories[i];
-        }
-      }
-      return null;
+      return $firebase(categoriesRef.child(categoryId)).$asObject();
     },
-    new: function(category){
-      var found = categories.filter(function(item){
-        return (item.name==category.name);
-      })
-      if (!found || !found.length){
-        category.id = getNextId(categories);
-        categories.unshift(category);
-        return category;
-      }
+    remove: function(category) {
+      return $firebase(categoriesRef).$remove(category.$id);
     },
+    // not using because we need async callback, so calling this directly in controller
+    // new: function(category){
+    //   category.userId = $rootScope.userId;
+    //   category.created = (new Date).getTime();
+    //   $firebase(categoriesRef).push(category);
+    // },
   }
 })
 
 
 // gets next id from an array of items
-function getNextId(items){
-  if (!items || items.length==0){
-    return 1;
-  }
-  var ids = items.map(function(item){return item.id})
-  return (Math.max.apply(null, ids) + 1);
-}
+// function getNextId(items){
+//   if (!items || items.length==0){
+//     return 1;
+//   }
+//   var ids = items.map(function(item){return item.id})
+//   return (Math.max.apply(null, ids) + 1);
+// }

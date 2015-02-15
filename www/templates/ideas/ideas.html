@@ -23,7 +23,7 @@
           <ion-item ng-click="filterCategory(undefined)" class="item-icon-left" ng-class="{active:!activeCategory}">
             <i class="icon ion-earth"></i>All Ideas
           </ion-item>
-          <ion-item ng-repeat="category in categories" ng-click="filterCategory(category)" class="item-icon-left" ng-class="{active:activeCategory==category}" ng-if="category.id!==0">
+          <ion-item ng-repeat="category in categories" ng-click="filterCategory(category)" class="item-icon-left" ng-class="{active:activeCategory==category}" ng-if="category.name!==' New Category'">
             <i class="icon ion-{{category.icon}}"></i>
             {{category.name}}
           </ion-item>
@@ -35,7 +35,7 @@
 
     <ion-side-menu-content>
       <ion-list>
-        <ion-item class="item-remove-animate item-icon-left item-icon-right" ng-repeat="idea in filteredIdeas | reverse" type="item-text-wrap" href="#/tab/ideas/{{idea.$id}}">
+        <ion-item class="item-remove-animate item-icon-left item-icon-right" ng-repeat="idea in filteredIdeas" type="item-text-wrap" href="#/tab/ideas/{{idea.$id}}">
           <i class="icon ion-{{getCategory(idea.category).icon}}" style="color:{{getCategory(idea.category).color}};"></i>
           <h2>{{idea.title}}</h2>
           <p>{{idea.description}}</p>

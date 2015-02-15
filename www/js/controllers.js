@@ -24,6 +24,9 @@ angular.module('ideabook.controllers', [])
 				ref.child("users").child(userData.uid).set({ 
 					email: user.email, 
 				}); 
+
+				// creates initial category fixtures
+				$scope.createCategoryFixtures(userData.uid);
 				$ionicLoading.hide(); 
 				$scope.modal.hide(); 
 			}).catch(function (error) { 
@@ -57,6 +60,18 @@ angular.module('ideabook.controllers', [])
 			}); 
 		} else alert("Please enter email and password both"); 
 	} 
+
+	$scope.createCategoryFixtures = function(uid){
+		var initialCategories = [
+			{name: ' New Category', userId: uid},
+		    {name: 'Products', icon: 'wand', color: '#43cee6', userId: uid},
+		    {name: 'Businesses', icon: 'social-bitcoin', color: '#ef4e3a', userId: uid},
+		    {name: 'Software Projects', icon: 'code-working', color: '#66cc33', userId: uid},
+		];
+		initialCategories.forEach(function(category){
+			ref.child("categories").push(category); 
+		})
+	}
 })
 
 
@@ -70,8 +85,15 @@ angular.module('ideabook.controllers', [])
 		if (date){return date.yyyymmdd();}
 	}
 
+	// this fires too many times. why?
 	$scope.getCategory = function(id){
-		return Categories.get(id);
+		for (key in $scope.categories){
+			if(typeof $scope.categories[key] === 'object'){
+				if ($scope.categories[key] && $scope.categories[key]['$id']==id){
+					return $scope.categories[key]
+				}
+			}
+		}
 	}
 
 	$scope.openSidemenu = function(){
@@ -83,10 +105,14 @@ angular.module('ideabook.controllers', [])
 		$scope.filteredIdeas = $scope.ideas;
 	}
 
+	$scope.fetchCategories = function(){
+		$scope.categories = Categories.allForUser($rootScope.userId);
+	}
+
 	$scope.filterCategory = function(category){
 		if (category){
 			$scope.filteredIdeas = ($scope.ideas).filter(function(idea){
-				return (idea.category==category.id)
+				return (idea.category==category.$id)
 			})
 		} else {
 			$scope.filteredIdeas = $scope.ideas;
@@ -97,24 +123,25 @@ angular.module('ideabook.controllers', [])
 	// makes sure that we get the ideas when userId comes in
 	$scope.$watch('userId', function() {
        $scope.fetchIdeas()
+       $scope.fetchCategories()
    	});
 
-   	$scope.$watch('filteredIdeas', function() {
-   		$scope.filteredIdeas.$loaded().then(function() {
-   			setTimeout(function(){
-   				$scope.ideasLoaded = true;
-   			}, 100);
-	    });
-   	});
+   	// $scope.$watch('filteredIdeas', function() {
+   	// 	$scope.filteredIdeas.$loaded().then(function() {
+   	// 		setTimeout(function(){
+   	// 			$scope.ideasLoaded = true;
+   	// 		}, 100);
+	   //  });
+   	// });
 
 	/****  init ****/
 	$scope.fetchIdeas()
-  	$scope.categories = Categories.all();
+	$scope.fetchCategories()
 })
 
-.controller('IdeaNewCtrl', function($scope, $stateParams, $ionicModal, $state, Ideas, Categories) {
+.controller('IdeaNewCtrl', function($scope, $rootScope, $firebase, $stateParams, $ionicModal, $state, Ideas, Categories) {
 	$scope.idea = {'date': (new Date())};
-	$scope.categories = Categories.all();
+	$scope.categories = Categories.allForUser($rootScope.userId);
 
 	// saves idea then returns to list of them
 	$scope.saveIdea = function(idea){
@@ -132,12 +159,12 @@ angular.module('ideabook.controllers', [])
 	}
 
 	// watches category to see if new category modal to be opened
-	$scope.$watch('idea.category', function(value) {
-	    if (value==0) {$scope.openCategoryModal()} // 'New Category' has value of 0
+	$scope.$watch('idea.category', function(category) {
+	    if (category && category.name==' New Category') {$scope.openCategoryModal()} // 'New Category' has value of 0
 	}, true);
 
 	$scope.$on('modal.hidden', function() {
-	    if ($scope.idea.category=='New Category'){
+	    if ($scope.idea.category.name==' New Category'){
 	    	$scope.idea.category=undefined;
 	    }
 	    $scope.category = {};
@@ -153,17 +180,14 @@ angular.module('ideabook.controllers', [])
 		$scope.modal = modal;
 	});
 	$scope.saveCategory = function(category){
-		category = Categories.new(category);
-		if ($scope.idea){
-			$scope.idea.category = category.id;
-		}
-		$scope.closeCategoryModal();
-	}
-	$scope.setCategoryColor = function(c) {
-		$scope.category.color=c;
-	}
-	$scope.setCategoryIcon = function(i) {
-		$scope.category.icon=i;
+  		var categoriesRef = (new Firebase($rootScope.firebaseUrl)).child('categories');
+
+		category.userId = $rootScope.userId;
+      	category.created = (new Date).getTime();
+      	$firebase(categoriesRef).$push(category).then(function(newCategory){
+      		$scope.idea.category = Categories.get(newCategory.key())
+      		$scope.modal.hide();
+      	});	
 	}
 	$scope.openCategoryModal = function() {
 		$scope.category = {};
@@ -171,10 +195,6 @@ angular.module('ideabook.controllers', [])
 		$scope.categoryIcons = ['home','search','heart','settings','email','paper-airplane','upload','medkit','map','person-add','chatbox-working','beer','pizza','power','camera','image','flash','bug','music-note','mic-a','bag','card','cash','pricetags','happy','sad','trophy','beaker','earth','planet','bonfire','leaf','model-s','plane','ios7-cart','ios7-home','ios7-bookmarks','ios7-americanfootball', 'ios7-paw', 'ios7-eye'];
 		$scope.modal.show();
 	};
-	$scope.closeCategoryModal = function() {
-	    $scope.modal.hide();
-	};
-	// end of new category stuff
 })
 
 .controller('IdeaDetailCtrl', function($scope, $state, $stateParams, Ideas) {
