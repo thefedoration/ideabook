@@ -87,10 +87,7 @@ ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSi
 	// watches when ideas are loaded to end loading animation
    	$scope.$watch('ideas', function() {
    		$scope.ideas.$loaded().then(function() {
-   			// $scope.ideasLoaded = true;
-   			setTimeout(function(){
-   				$scope.ideasLoaded = true;
-   			}, 100);
+   			$scope.ideasLoaded = true;
 	    });
    	});
 
@@ -175,8 +172,18 @@ ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSi
 })
 
 
-.controller('IdeaDetailCtrl', function($scope, $state, $stateParams, Ideas, $ionicPopup, $ionicActionSheet) {
-  	$scope.idea = Ideas.get($stateParams.ideaId);
+.controller('IdeaDetailCtrl', function($scope, $rootScope, $state, $stateParams, Ideas, Categories, Users, $ionicPopup, $ionicActionSheet) {
+
+  	// this fires too many times. why?
+	$scope.getCategory = function(id){
+		for (key in $scope.categories){
+			if(typeof $scope.categories[key] === 'object'){
+				if ($scope.categories[key] && $scope.categories[key]['$id']==id){
+					return $scope.categories[key]
+				}
+			}
+		}
+	}
 
   	$scope.deleteIdea = function(idea) {
 		$ionicPopup.confirm({
@@ -209,6 +216,18 @@ ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSi
           }
         });
     };
+
+    $scope.objectLength = function (items) {
+    	if (!items){return 0}
+    	return Object.keys(items).length
+    }
+
+    /****  init ****/
+    $scope.idea = Ideas.get($stateParams.ideaId);
+  	$scope.idea.$loaded(function(){
+  		$scope.category = Categories.get($scope.idea.category)
+  		$scope.user = Users.get($scope.idea.userId)
+  	})
 })
 
 

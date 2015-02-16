@@ -26,13 +26,13 @@
           <div style="padding: 50px 20px;margin: 20px;" ng-if="!ideasLoaded">
             <div ng-include src='"templates/partials/loader.html"'></div>
           </div>
-          <div style="padding: 50px 20px;margin: 20px;" ng-if="ideasLoaded && !ideas.length">
+          <div style="padding: 50px 20px;margin: 20px;" ng-show="ideasLoaded && !ideas.length" class="slow-show">
             <h5 class="positive" style="text-align:center;">You have no ideas</h5>
             <a href="#/tab/ideas/new" class="button button-block button-outline button-positive">
               <i class="icon ion-ios7-lightbulb-outline"></i> Create one
             </a>
           </div>
-           <div style="padding: 50px 20px;margin: 20px;" ng-if="ideasLoaded && ideas.length">
+           <div style="padding: 50px 20px;margin: 20px;" ng-show="ideasLoaded && ideas.length" class="slow-show">
             <h5 class="positive" style="text-align:center;">No ideas for this filter</h5>
             <a href="#/tab/ideas/new" class="button button-block button-small button-positive">
               <i class="icon ion-ios7-lightbulb-outline"></i> Make one

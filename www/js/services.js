@@ -83,12 +83,13 @@ angular.module('ideabook.services', ['firebase'])
   }
 })
 
+.factory('Users', function($window, $firebase, $rootScope, $q) {
+  var ref = new Firebase($rootScope.firebaseUrl); 
+  var usersRef = ref.child('users');
 
-// gets next id from an array of items
-// function getNextId(items){
-//   if (!items || items.length==0){
-//     return 1;
-//   }
-//   var ids = items.map(function(item){return item.id})
-//   return (Math.max.apply(null, ids) + 1);
-// }
+  return {
+    get: function(userId) {
+      return $firebase(usersRef.child(userId)).$asObject();
+    },
+  }
+})

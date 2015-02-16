@@ -131,3 +131,17 @@ label.noError .input-label{
 .popup-body{
 	text-align:center;
 }
+
+
+.slow-show {
+  -webkit-transition:all linear 1s;
+  transition:all linear 1s;
+}
+.slow-show.ng-hide {
+  opacity:0;
+}
+
+.timestamp{
+	color:rgba(0,0,0,0.25)!important;
+	font-size:12px;
+}
