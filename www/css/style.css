@@ -82,6 +82,7 @@ label.noError .input-label{
 }
 .dark .item:last-child {
   border-bottom: 1px solid rgba(255,255,255,0.25);
+  margin-bottom:42px;
 }
 .dark .item.current {
   background-color: #262727 !important;
@@ -125,4 +126,8 @@ label.noError .input-label{
 	font-size:15px;
 	left:75px !important;
 	right:75px !important;
+}
+
+.popup-body{
+	text-align:center;
 }

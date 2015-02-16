@@ -9,9 +9,10 @@ angular.module('ideabook.services', ['firebase'])
 ])
 
 
-.factory('Ideas', function($window, $firebase, $rootScope) {
+.factory('Ideas', function($window, $firebase, $rootScope, $q) {
   var ref = new Firebase($rootScope.firebaseUrl); 
   var ideasRef = ref.child('ideas');
+  var usersRef = ref.child('users');
   var categoriesRef = ref.child('categories');
 
   return {
@@ -25,19 +26,23 @@ angular.module('ideabook.services', ['firebase'])
       return $firebase(ideasRef.child(ideaId)).$asObject();
     },
     remove: function(idea) {
-      var categoryId = idea.category;
-      // removes idea from list of ideas, then from idea index within categories
-      return $firebase(ideasRef).$remove(idea.$id).then(function(){
-        $firebase(categoriesRef.child(categoryId).child('ideas')).$remove(idea.$id);
-      });
+      idea.$loaded().then(function(idea){
+        var categoryId = idea.category;
+        var ideaId = idea.$id;
+        var userId = idea.userId;
+        $firebase(ideasRef).$remove(ideaId);
+        $firebase(categoriesRef.child(categoryId).child('ideas')).$remove(ideaId);
+        $firebase(usersRef.child(userId).child('ideas')).$remove(ideaId);
+      })
     },
     new: function(idea){
       idea.userId = $rootScope.userId;
       idea.date = idea.date.toDateString();
       idea.created = (new Date).getTime();
-      // adds idea to list of ideas then to category
+      // adds idea to list of ideas then to category and user
       $firebase(ideasRef).$push(idea).then(function(newIdea){
         $firebase(categoriesRef.child(idea.category).child('ideas').child(newIdea.key())).$set(true);
+        $firebase(usersRef.child(idea.userId).child('ideas').child(newIdea.key())).$set(true);
       });
     },
   }
@@ -45,6 +50,7 @@ angular.module('ideabook.services', ['firebase'])
 
 .factory('Categories', function($window, $q, $firebase, $rootScope) {
   var ref = new Firebase($rootScope.firebaseUrl); 
+  var usersRef = ref.child('users');
   var categoriesRef = ref.child('categories');
 
   return {
@@ -58,13 +64,21 @@ angular.module('ideabook.services', ['firebase'])
       return $firebase(categoriesRef.child(categoryId)).$asObject();
     },
     remove: function(category) {
-      return $firebase(categoriesRef).$remove(category.$id);
+      var categoryId = category.$id;
+      var userId = $rootScope.userId;
+      $firebase(categoriesRef).$remove(categoryId);
+      $firebase(usersRef.child(userId).child('categories')).$remove(categoryId);
     },
-    // not using because we need async callback, so calling this directly in controller
     new: function(category){
+      // create new category, add to user's categories. resolves a promise so we get category id
       category.userId = $rootScope.userId;
       category.created = (new Date).getTime();
-      $firebase(categoriesRef).$push(category);
+      var deferred = $q.defer();
+      $firebase(categoriesRef).$push(category).then(function(newCategory){
+        $firebase(usersRef.child(category.userId).child('categories').child(newCategory.key())).$set(true);
+        deferred.resolve(newCategory.key());
+      })
+      return deferred.promise;
     },
   }
 })

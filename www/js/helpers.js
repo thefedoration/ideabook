@@ -12,3 +12,13 @@ ideabook.filter('reverse', function() {
     return items.slice().reverse();
   };
 });
+
+// filters by property, returns all if property undefined
+ideabook.filter('filterByProperty', function() {
+  return function(ideas, property, value) {
+  	if (!value){ return ideas }
+  	return ideas.filter(function(idea){
+  		return idea[property]==value;
+  	})
+  };
+});

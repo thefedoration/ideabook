@@ -1,5 +1,5 @@
 var ideaControllers = angular.module('ideaControllers', []);
-ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSideMenuDelegate, $ionicModal, Ideas, Categories) {
+ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSideMenuDelegate, $ionicPopup, $ionicModal, Ideas, Categories) {
   	/****  actions ****/
 	// stringifys date for input
 	$scope.toStringDate = function(date){
@@ -33,7 +33,6 @@ ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSi
 
 	$scope.fetchIdeas = function(){
 		$scope.ideas = Ideas.allForUser($rootScope.userId);
-		$scope.filteredIdeas = $scope.ideas;
 	}
 
 	$scope.fetchCategories = function(){
@@ -41,28 +40,43 @@ ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSi
 	}
 
 	$scope.filterCategory = function(category){
-		if (category){
-			$scope.filteredIdeas = ($scope.ideas).filter(function(idea){
-				return (idea.category==category.$id)
-			})
-		} else {
-			$scope.filteredIdeas = $scope.ideas;
-		}
 		$scope.activeCategory = category;
+		$rootScope.activeCategory = category;
 	}
 
-	// created initial category fixtures
-	$scope.createCategoryFixtures = function(){
-		var initialCategories = [
-			{name: ' New Category'},
-		    {name: 'Product', icon: 'wand', color: '#43cee6'},
-		    {name: 'Business', icon: 'social-bitcoin', color: '#ef4e3a'},
-		    {name: 'Software Project', icon: 'code-working', color: '#66cc33'},
-		];
-		initialCategories.forEach(function(category){
-			Categories.new(category)
-		})
-	}
+	// deletes category if it has no ideas in it
+	$scope.deleteCategory = function(category) {
+		if (category && category.ideas && Object.keys(category.ideas).length){
+			return $ionicPopup.alert({
+		     title: 'Unable to delete category',
+		     template: 'It has ideas in it!'
+		   });
+		}
+		$ionicPopup.confirm({
+			title: 'Delete Category',
+			template: 'Are you sure you want to delete this category?'
+		}).then(function(res) {
+			if(res){
+				Categories.remove(category)
+				$scope.filterCategory(undefined);
+			}
+		});
+	};
+
+	// clears all ideas from a category
+	$scope.clearCategory = function(category) {
+		$ionicPopup.confirm({
+			title: 'Clear Category',
+			template: 'Are you sure you want to delete all of the ideas in this category?'
+		}).then(function(res) {
+			if(res && category.ideas && Object.keys(category.ideas)){
+				Object.keys(category.ideas).forEach(function(ideaId){
+					var idea = Ideas.get(ideaId)
+					Ideas.remove(idea)
+				})
+			}
+		});
+	};
 
 	// makes sure that we get the ideas when userId comes in
 	$scope.$watch('userId', function() {
@@ -77,17 +91,6 @@ ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSi
    			setTimeout(function(){
    				$scope.ideasLoaded = true;
    			}, 100);
-	    });
-   	});
-
-   	// watches categories to see if it should add any initial fixtures
-   	$scope.$watch('categories', function() {
-   		$scope.categories.$loaded().then(function() {
-   			setTimeout(function(){
-   				if ($scope.categories.length==0){
-   					$scope.createCategoryFixtures($scope.userId);
-   				}
-   			}, 200);
 	    });
    	});
 
@@ -129,14 +132,22 @@ ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSi
 		}
 	}, true);
 
+	// if we have category in sidebar, set current
+	$scope.$watch('activeCategory', function(activeCategory) {
+		if (activeCategory){
+			$scope.idea.category=activeCategory.$id;
+		}
+	}, true);
+
 	// saves category, hides modal, sets current category
 	$scope.saveCategory = function(category){
 		category.userId = $rootScope.userId;
       	category.created = (new Date).getTime();
-      	$firebase($scope.categoriesRef).$push(category).then(function(newCategory){
-      		$scope.idea.category = newCategory.key()
+
+      	Categories.new(category).then(function(newCategory) {
+      		$scope.idea.category = newCategory;
       		$scope.modal.hide();
-      	});	
+      	})
 	}
 
 	// when closing new category modal, set category to blank
