@@ -1,4 +1,4 @@
-<ion-view view-title="Ideas">
+<ion-view view-title="{{activeCategory.name}} Ideas">
   <ion-nav-buttons side="left">
     <button class="button button-icon" ng-click="openSidemenu()">
       <i class="icon ion-ios7-settings" ng-class="{balanced:activeCategory}"></i>
@@ -22,14 +22,21 @@
             <i class="icon ion-chevron-right icon-accessory"></i>
           </ion-item>
         </ion-list>
-
-        <ion-pane ng-if="!ideas.length">
+        <ion-pane ng-if="!filteredIdeas.length" style="overflow:visible;">
           <div style="padding: 50px 20px;margin: 20px;" ng-if="!ideasLoaded">
             <div ng-include src='"templates/partials/loader.html"'></div>
           </div>
-          <div style="padding: 50px 20px;margin: 20px;" ng-if="ideasLoaded">
+          <div style="padding: 50px 20px;margin: 20px;" ng-if="ideasLoaded && !ideas.length">
             <h5 class="positive" style="text-align:center;">You have no ideas</h5>
-            <a href="#/tab/ideas/new" class="button button-block button-outline ion-ios7-lightbulb-outline button-positive">Create one</a>
+            <a href="#/tab/ideas/new" class="button button-block button-outline button-positive">
+              <i class="icon ion-ios7-lightbulb-outline"></i> Create one
+            </a>
+          </div>
+           <div style="padding: 50px 20px;margin: 20px;" ng-if="ideasLoaded && ideas.length">
+            <h5 class="positive" style="text-align:center;">No ideas for this filter</h5>
+            <div ng-click="openSidemenu()" class="button button-block button-small button-outline button-positive">
+              Select another category
+            </div>
           </div>
         </ion-pane>
       </ion-content>
@@ -37,20 +44,27 @@
 
     <!-- Left menu -->
     <ion-side-menu side="left" class="dark">
-      <ion-header-bar class="bar-dark">
-        <h1 class="title">Categories</h1>
-      </ion-header-bar>
       <ion-content>
-        <ion-list class="category-sidebar">
+        <ion-list class="category-sidebar" style="margin-bottom:44px;">
+          <div class="item item-divider bar-dark" style="text-align:center;">
+            <h2 class="title">Categories</h2>
+          </div>
           <ion-item ng-click="filterCategory(undefined)" class="item-icon-left" ng-class="{active:!activeCategory}">
-            <i class="icon ion-earth"></i>All Ideas
+            <i class="icon ion-earth"></i>All Ideas <span class="badge badge-positive">{{numChildren(ideas)}}</span>
           </ion-item>
           <ion-item ng-repeat="category in categories" ng-click="filterCategory(category)" class="item-icon-left" ng-class="{active:activeCategory==category}" ng-if="category.name!==' New Category'">
             <i class="icon ion-{{category.icon}}"></i>
-            {{category.name}}
+            {{category.name}} <span class="badge badge-positive">{{numChildren(category.ideas)}}</span>
           </ion-item>
         </ion-list>
       </ion-content>
+      <ion-footer-bar ng-if="activeCategory" style="z-index:100;" class="item-remove-animate">
+        <div class="button-bar">
+          <a class="button button-positive"><i class="ion-edit"></i> Edit</a>
+          <a class="button button-positive"><i class="ion-ios7-trash-outline"></i> Delete</a>
+          <a class="button button-positive"><i class="ion-ios7-refresh-outline"></i> Clear</a>
+        </div>
+      </ion-footer-bar>
     </ion-side-menu>
 
   </ion-side-menus>

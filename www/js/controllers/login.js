@@ -19,13 +19,9 @@ loginControllers.controller('LoginCtrl', function ($scope, $ionicModal, $state, 
 				email: user.email, 
 				password: user.password 
 			}).then(function (userData) { 
-				alert("User created successfully!"); 
 				ref.child("users").child(userData.uid).set({ 
 					email: user.email, 
 				}); 
-
-				// creates initial category fixtures
-				$scope.createCategoryFixtures(userData.uid);
 				$ionicLoading.hide(); 
 				$scope.modal.hide(); 
 			}).catch(function (error) { 
@@ -59,16 +55,4 @@ loginControllers.controller('LoginCtrl', function ($scope, $ionicModal, $state, 
 			}); 
 		} else alert("Please enter email and password both"); 
 	} 
-
-	$scope.createCategoryFixtures = function(uid){
-		var initialCategories = [
-			{name: ' New Category', userId: uid},
-		    {name: 'Products', icon: 'wand', color: '#43cee6', userId: uid},
-		    {name: 'Businesses', icon: 'social-bitcoin', color: '#ef4e3a', userId: uid},
-		    {name: 'Software Projects', icon: 'code-working', color: '#66cc33', userId: uid},
-		];
-		initialCategories.forEach(function(category){
-			ref.child("categories").push(category); 
-		})
-	}
 })

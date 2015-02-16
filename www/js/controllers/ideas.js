@@ -17,6 +17,16 @@ ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSi
 		}
 	}
 
+	// spits out number of children in a node (makes sure not to count dolla $igns)
+	$scope.numChildren = function(node){
+		if (node){
+			return Object.keys(node).filter(function(key){
+				return (key.indexOf('$') == -1)
+			}).length
+		}
+		return 0
+	}
+
 	$scope.openSidemenu = function(){
 		$ionicSideMenuDelegate.toggleLeft();
 	}
@@ -41,19 +51,45 @@ ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSi
 		$scope.activeCategory = category;
 	}
 
+	// created initial category fixtures
+	$scope.createCategoryFixtures = function(){
+		var initialCategories = [
+			{name: ' New Category'},
+		    {name: 'Product', icon: 'wand', color: '#43cee6'},
+		    {name: 'Business', icon: 'social-bitcoin', color: '#ef4e3a'},
+		    {name: 'Software Project', icon: 'code-working', color: '#66cc33'},
+		];
+		initialCategories.forEach(function(category){
+			Categories.new(category)
+		})
+	}
+
 	// makes sure that we get the ideas when userId comes in
 	$scope.$watch('userId', function() {
        $scope.fetchIdeas()
        $scope.fetchCategories()
    	});
 
-   	// $scope.$watch('filteredIdeas', function() {
-   	// 	$scope.filteredIdeas.$loaded().then(function() {
-   	// 		setTimeout(function(){
-   	// 			$scope.ideasLoaded = true;
-   	// 		}, 100);
-	   //  });
-   	// });
+	// watches when ideas are loaded to end loading animation
+   	$scope.$watch('ideas', function() {
+   		$scope.ideas.$loaded().then(function() {
+   			// $scope.ideasLoaded = true;
+   			setTimeout(function(){
+   				$scope.ideasLoaded = true;
+   			}, 100);
+	    });
+   	});
+
+   	// watches categories to see if it should add any initial fixtures
+   	$scope.$watch('categories', function() {
+   		$scope.categories.$loaded().then(function() {
+   			setTimeout(function(){
+   				if ($scope.categories.length==0){
+   					$scope.createCategoryFixtures($scope.userId);
+   				}
+   			}, 200);
+	    });
+   	});
 
 	/****  init ****/
 	$scope.fetchIdeas()
@@ -80,11 +116,30 @@ ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSi
 		}
 	}
 
+	/****  new category stuff ****/
+	$scope.categoriesRef = (new Firebase($rootScope.firebaseUrl)).child('categories');
+
 	// watches category to see if new category modal to be opened
-	$scope.$watch('idea.category', function(category) {
-	    if (category && category.name==' New Category') {$scope.openCategoryModal()} // 'New Category' has value of 0
+	$scope.$watch('idea.category', function(id) {
+		if (id){
+			var category = $firebase($scope.categoriesRef.child(id)).$asObject();
+			category.$loaded().then(function(){
+				if (category && category.name==' New Category') {$scope.openCategoryModal()}
+			})
+		}
 	}, true);
 
+	// saves category, hides modal, sets current category
+	$scope.saveCategory = function(category){
+		category.userId = $rootScope.userId;
+      	category.created = (new Date).getTime();
+      	$firebase($scope.categoriesRef).$push(category).then(function(newCategory){
+      		$scope.idea.category = newCategory.key()
+      		$scope.modal.hide();
+      	});	
+	}
+
+	// when closing new category modal, set category to blank
 	$scope.$on('modal.hidden', function() {
 	    if ($scope.idea.category.name==' New Category'){
 	    	$scope.idea.category=undefined;
@@ -92,22 +147,14 @@ ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSi
 	    $scope.category = {};
 	});
 
+	// initialize new category modal
 	$ionicModal.fromTemplateUrl('templates/ideas/category-new.html', { 
 		scope: $scope, animation: 'slide-in-up'
 	}).then(function (modal) { 
 		$scope.modal = modal; 
 	}); 
 
-	$scope.saveCategory = function(category){
-  		var categoriesRef = (new Firebase($rootScope.firebaseUrl)).child('categories');
-
-		category.userId = $rootScope.userId;
-      	category.created = (new Date).getTime();
-      	$firebase(categoriesRef).$push(category).then(function(newCategory){
-      		$scope.idea.category = Categories.get(newCategory.key())
-      		$scope.modal.hide();
-      	});	
-	}
+	// opens and initializes the options
 	$scope.openCategoryModal = function() {
 		$scope.category = {};
 		$scope.categoryColors = ['#e5e5e5','#145fd7','#43cee6','#66cc33','#f0b840','#ef4e3a','#8a6de9','#444'];
@@ -117,7 +164,7 @@ ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSi
 })
 
 
-.controller('IdeaDetailCtrl', function($scope, $state, $stateParams, Ideas, $ionicPopup, $ionicPopover) {
+.controller('IdeaDetailCtrl', function($scope, $state, $stateParams, Ideas, $ionicPopup, $ionicActionSheet) {
   	$scope.idea = Ideas.get($stateParams.ideaId);
 
   	$scope.deleteIdea = function(idea) {
@@ -132,18 +179,25 @@ ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSi
 		});
 	};
 
-	$ionicPopover.fromTemplateUrl('templates/ideas/idea-actions.html', {
-		scope: $scope,
-	}).then(function(popover) {
-		$scope.popover = popover;
-	});
-
-	$scope.openPopover = function($event) {
-		$scope.popover.show($event);
-	};
-	$scope.closePopover = function() {
-		$scope.popover.hide();
-	}
+	$scope.showActionsheet = function () {
+        $ionicActionSheet.show({
+          // titleText: 'Idea Actions',
+          buttons: [
+            { text: 'Edit' },
+            { text: 'Share' },
+          ],
+          destructiveText: 'Delete',
+          cancelText: 'Cancel',
+          buttonClicked: function (index) {
+            console.log('BUTTON CLICKED', index);
+            return true;
+          },
+          destructiveButtonClicked: function () {
+       		$scope.deleteIdea($scope.idea)
+            return true;
+          }
+        });
+    };
 })
 
 

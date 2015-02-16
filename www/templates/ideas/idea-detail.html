@@ -1,10 +1,9 @@
-<ion-view view-title="Idea">
+<ion-view view-title="{{idea.title}}">
   <ion-nav-buttons side="right">
-    <button class="button button-icon" ng-click="openPopover($event)">
+    <button class="button button-icon" ng-click="showActionsheet()">
       <i class="icon ion-navicon"></i>
     </button>
   </ion-nav-buttons>
-
   <ion-content class="padding">
     <img ng-src="{{idea.face}}" style="width: 64px; height: 64px">
     <i class="icon ion-{{getCategory(idea.category).icon}}" style="color:{{getCategory(idea.category).color}};"></i>

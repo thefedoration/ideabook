@@ -60,15 +60,19 @@ label.noError .input-label{
 .dark .bar-dark{
   background-color: #1C3F7A !important;
   color: #ffffff;
+  border-bottom:1px solid white !important;
 }
 .dark .scroll-content {
-  background-color: #325287 !important;
+	background-color: #1C3F7A !important;
 }
+.dark .bar-footer{
+	background:none;
+}
+
 .dark .item {
-  background-color: #325287;
+  background-color: #1C3F7A;
   border:none;
   border-bottom:  1px solid rgba(255,255,255,0.25);
-  /*padding: 10px;*/
   font-size:12px;
   color:white;
   max-height: none;
@@ -115,4 +119,10 @@ label.noError .input-label{
 
 .popover-backdrop.active {
 	background-color: rgba(0, 0, 0, 0.25);
+}
+
+.bar .title{
+	font-size:15px;
+	left:75px !important;
+	right:75px !important;
 }

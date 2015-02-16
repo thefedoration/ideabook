@@ -12,6 +12,7 @@ angular.module('ideabook.services', ['firebase'])
 .factory('Ideas', function($window, $firebase, $rootScope) {
   var ref = new Firebase($rootScope.firebaseUrl); 
   var ideasRef = ref.child('ideas');
+  var categoriesRef = ref.child('categories');
 
   return {
     all: function() {
@@ -24,14 +25,20 @@ angular.module('ideabook.services', ['firebase'])
       return $firebase(ideasRef.child(ideaId)).$asObject();
     },
     remove: function(idea) {
-      return $firebase(ideasRef).$remove(idea.$id);
+      var categoryId = idea.category;
+      // removes idea from list of ideas, then from idea index within categories
+      return $firebase(ideasRef).$remove(idea.$id).then(function(){
+        $firebase(categoriesRef.child(categoryId).child('ideas')).$remove(idea.$id);
+      });
     },
     new: function(idea){
       idea.userId = $rootScope.userId;
-      idea.category = idea.category.$id;
       idea.date = idea.date.toDateString();
       idea.created = (new Date).getTime();
-      return $firebase(ideasRef).$push(idea);
+      // adds idea to list of ideas then to category
+      $firebase(ideasRef).$push(idea).then(function(newIdea){
+        $firebase(categoriesRef.child(idea.category).child('ideas').child(newIdea.key())).$set(true);
+      });
     },
   }
 })
@@ -54,11 +61,11 @@ angular.module('ideabook.services', ['firebase'])
       return $firebase(categoriesRef).$remove(category.$id);
     },
     // not using because we need async callback, so calling this directly in controller
-    // new: function(category){
-    //   category.userId = $rootScope.userId;
-    //   category.created = (new Date).getTime();
-    //   $firebase(categoriesRef).push(category);
-    // },
+    new: function(category){
+      category.userId = $rootScope.userId;
+      category.created = (new Date).getTime();
+      $firebase(categoriesRef).$push(category);
+    },
   }
 })
 
