@@ -145,3 +145,49 @@ label.noError .input-label{
 	color:rgba(0,0,0,0.25)!important;
 	font-size:12px;
 }
+
+/* login screen */
+.login-shadow{
+	position:absolute;
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
+	background:rgba(0,0,0,0.5);
+}
+.login-background{
+	position:absolute;
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
+	background: url('/img/idea.jpg') no-repeat center/cover;
+	/*-webkit-filter: blur(2px);
+	-moz-filter: blur(2px);
+	-o-filter: blur(2px);
+	-ms-filter: blur(2px);
+	filter: blur(2px);*/
+}
+.login-card{
+	background:rgba(0,0,0,0.8);
+	text-align:center;
+	color:white;
+	border:1px solid rgba(255,255,255,0.5);
+	padding-bottom:0;
+	padding-top:0;
+}
+.login-card h4{
+	margin-bottom:0;
+}
+.login-card h5{
+	color:white;
+	margin-top:0;
+}
+.login-card hr{
+	
+}
+.login .bar{
+	background:rgba(0,0,0,0.8);
+	color:white;
+}
+/* login screen */
