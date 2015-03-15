@@ -161,7 +161,7 @@ label.noError .input-label{
 	left:0;
 	right:0;
 	bottom:0;
-	background: url('/img/idea.jpg') no-repeat center/cover;
+	background: url('/img/spark.jpg') no-repeat center/cover;
 	/*-webkit-filter: blur(2px);
 	-moz-filter: blur(2px);
 	-o-filter: blur(2px);
@@ -177,7 +177,7 @@ label.noError .input-label{
 	padding-top:0;
 }
 .login-card h4{
-	margin-bottom:0;
+	margin-bottom:5px;
 }
 .login-card h5{
 	color:white;

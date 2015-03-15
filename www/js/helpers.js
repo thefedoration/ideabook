@@ -22,3 +22,11 @@ ideabook.filter('filterByProperty', function() {
   	})
   };
 });
+
+function numChildren(node){
+  console.log(node)
+  return Object.keys(node).filter(function(key){
+    console.log(key)
+    return (key.indexOf('$') == -1)
+  }).length
+}

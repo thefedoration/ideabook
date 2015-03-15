@@ -1,6 +1,11 @@
 <ion-view view-title="Account">
   <ion-content>
     <ion-list>
+      <div class="item item-avatar" ng-if="currentUser">
+        <img ng-src="{{currentUser.picture}}">
+        <h2>{{currentUser.firstName}} {{currentUser.lastName}}</h2>
+        <p>{{numChildren(ideas)}} <i class="icon ion-ios7-lightbulb-outline"></i></p>
+      </div>
       <div class="item item-button-right">
         Log Out
         <button class="button" ng-click="logout()">
