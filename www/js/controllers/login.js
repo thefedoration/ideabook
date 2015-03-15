@@ -67,32 +67,39 @@ loginControllers.controller('LoginCtrl', function($scope, $ionicModal, $state, $
 			if (error) {
 				console.log("Login Failed!", error);
 			} else {
-				if (!ref.child("users").child(authData.uid)){
-					ref.child("users").child(authData.uid).set({ 
-						provider: authData.provider, 
-						firstName: authData.facebook.cachedUserProfile.first_name, 
-						lastName: authData.facebook.cachedUserProfile.last_name, 
-						fbId: authData.facebook.id, 
-						link: authData.facebook.cachedUserProfile.link, 
-						name: authData.facebook.cachedUserProfile.name, 
-						picture: authData.facebook.cachedUserProfile.picture.data.url, 
-					}); 
-					if (authData.facebook.email){
-						ref.child("users").child(authData.uid).set({ 
-							email: authData.facebook.email
-						}); 
-					}
-				}
-				$ionicLoading.hide(); 
-				$scope.modal.hide(); 
-				$rootScope.userId = authData.uid;
 				ref.child("users").child(authData.uid).once('value', function (snapshot) { 
 					var val = snapshot.val();
-					if (!val.categories || Object.keys(val.categories).length==0){
-						$scope.createCategoryFixtures();
+					if (!val){
+						console.log('creating user')
+						ref.child("users").child(authData.uid).set({ 
+							provider: authData.provider, 
+							firstName: authData.facebook.cachedUserProfile.first_name, 
+							lastName: authData.facebook.cachedUserProfile.last_name, 
+							fbId: authData.facebook.id, 
+							link: authData.facebook.cachedUserProfile.link, 
+							name: authData.facebook.cachedUserProfile.name, 
+							picture: authData.facebook.cachedUserProfile.picture.data.url, 
+						}); 
+						if (authData.facebook.email){
+							ref.child("users").child(authData.uid).set({ 
+								email: authData.facebook.email
+							}); 
+						}
 					}
-				}); 
-				$state.go('tab.ideas'); 
+
+					$ionicLoading.hide(); 
+					$scope.modal.hide(); 
+					$rootScope.userId = authData.uid;
+					ref.child("users").child(authData.uid).once('value', function (snapshot) { 
+						var val = snapshot.val();
+						if (!val.categories || Object.keys(val.categories).length==0){
+							console.log('creating categories')
+							$scope.createCategoryFixtures();
+						}
+					}); 
+					$state.go('tab.ideas'); 
+				});
+				
 			}
 		});
 	} 
