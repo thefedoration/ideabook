@@ -149,7 +149,7 @@ ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSi
 
 	// when closing new category modal, set category to blank
 	$scope.$on('modal.hidden', function() {
-	    if ($scope.idea.category.name==' New Category'){
+	    if ($scope.idea.category.name==' New Category' || !$scope.idea.category.name){
 	    	$scope.idea.category=undefined;
 	    }
 	    $scope.category = {};

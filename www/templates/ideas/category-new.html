@@ -1,9 +1,13 @@
 <ion-modal-view>
   <ion-header-bar>
-    <h1 class="title">New Category</h1>
     <a class="button back-button buttons button-clear header-item" ng-click="modal.hide()">
       <i class="icon ion-ios7-close-outline"></i>
       <span>close</span>
+    </a>
+    <h1 class="title">New Category</h1>
+    <a class="button buttons button-clear header-item button-positive" ng-click="saveCategory(category)" ng-class="{disabled:!category.name || !category.color || !category.icon}">
+      <i class="icon ion-ios7-checkmark-outline positive"></i>
+      <span class="">save</span>
     </a>
   </ion-header-bar>
 

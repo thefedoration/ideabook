@@ -61,6 +61,9 @@ var ideabook = angular.module('ideabook', [
 
   // ionic configurations
   $ionicConfigProvider.tabs.position('bottom');
+  $ionicConfigProvider.backButton.icon('ion-chevron-left');
+  $ionicConfigProvider.tabs.style('standard');
+  $ionicConfigProvider.navBar.alignTitle('center');
 
   $stateProvider
   .state('login', { 
