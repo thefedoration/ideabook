@@ -6,7 +6,6 @@ function onDeviceReady() {
 }
 document.addEventListener("deviceready", onDeviceReady, false);
 
-
 var ideabook = angular.module('ideabook', [
   'ionic', 
   'firebase', 
@@ -58,10 +57,12 @@ var ideabook = angular.module('ideabook', [
   });
 })
 
-.config(function($stateProvider, $urlRouterProvider) {
+.config(function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
+
+  // ionic configurations
+  $ionicConfigProvider.tabs.position('bottom');
 
   $stateProvider
-
   .state('login', { 
     url: "/login", 
     templateUrl: "templates/login/login.html", 
