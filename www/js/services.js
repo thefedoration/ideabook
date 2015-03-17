@@ -47,13 +47,23 @@ angular.module('ideabook.services', ['firebase'])
     },
     update: function(idea){
       idea.date = idea.date.toDateString();
-      // updates this idea with new information
-      for (key in idea){
-        if (idea[key] && key.indexOf('$')==-1 && key!=='forEach'){
-          $firebase(ideasRef.child(idea.$id).child(key)).$set(idea[key])
-        }
-      }
 
+      // if we are changing categories, change the reference on the category
+      var category = $firebase(ideasRef.child(idea.$id).child('category')).$asObject();
+      category.$loaded(function(category){
+        var oldCategory = category.$value;
+        if (oldCategory!=idea.category){
+          $firebase(categoriesRef.child(oldCategory).child('ideas')).$remove(idea.$id);
+          $firebase(categoriesRef.child(idea.category).child('ideas').child(idea.$id)).$set(true);
+        }
+
+        // updates this idea with new information
+        for (key in idea){
+          if (idea[key] && key.indexOf('$')==-1 && key!=='forEach'){
+            $firebase(ideasRef.child(idea.$id).child(key)).$set(idea[key])
+          }
+        }
+      })
     },
   }
 })
