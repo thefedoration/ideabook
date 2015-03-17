@@ -61,7 +61,7 @@ var ideabook = angular.module('ideabook', [
 
   // ionic configurations
   $ionicConfigProvider.tabs.position('bottom');
-  $ionicConfigProvider.backButton.icon('ion-chevron-left');
+  $ionicConfigProvider.backButton.text('Back').icon('ion-chevron-left');
   $ionicConfigProvider.tabs.style('standard');
   $ionicConfigProvider.navBar.alignTitle('center');
 
@@ -113,6 +113,15 @@ var ideabook = angular.module('ideabook', [
           controller: 'IdeaDetailCtrl'
         }
       }
+    })
+    .state('tab.idea-edit', {
+      url: '/ideas/:ideaId/edit',
+      views: {
+        'tab-ideas': {
+          templateUrl: 'templates/ideas/idea-new.html',
+          controller: 'IdeaEditCtrl'
+        }
+      },
     })
 
   .state('tab.friends', {

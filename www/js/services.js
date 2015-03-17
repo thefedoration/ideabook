@@ -45,6 +45,16 @@ angular.module('ideabook.services', ['firebase'])
         $firebase(usersRef.child(idea.userId).child('ideas').child(newIdea.key())).$set(true);
       });
     },
+    update: function(idea){
+      idea.date = idea.date.toDateString();
+      // updates this idea with new information
+      for (key in idea){
+        if (idea[key] && key.indexOf('$')==-1 && key!=='forEach'){
+          $firebase(ideasRef.child(idea.$id).child(key)).$set(idea[key])
+        }
+      }
+
+    },
   }
 })
 

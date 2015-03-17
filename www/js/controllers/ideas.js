@@ -207,7 +207,9 @@ ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSi
           destructiveText: 'Delete',
           cancelText: 'Cancel',
           buttonClicked: function (index) {
-            console.log('BUTTON CLICKED', index);
+            if (index==0){
+            	return $state.go('tab.idea-edit', {'ideaId':$scope.idea.$id});
+            }
             return true;
           },
           destructiveButtonClicked: function () {
@@ -228,6 +230,36 @@ ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSi
   		$scope.category = Categories.get($scope.idea.category)
   		$scope.user = Users.get($scope.idea.userId)
   	})
+})
+
+.controller('IdeaEditCtrl', function($scope, $rootScope, $controller, $firebase, $stateParams, $state, Ideas, Categories) {
+
+	/****  init ****/
+
+	// inherits IdeaNewCtrl because a lot of the functions are the same
+	$controller('IdeaNewCtrl', {$scope: $scope});
+
+	// $scope.categories = Categories.allForUser($rootScope.userId);
+    $scope.idea = Ideas.get($stateParams.ideaId);
+  	$scope.idea.$loaded(function(){
+	    $scope.idea.date = new Date($scope.idea.date);
+  		$scope.category = Categories.get($scope.idea.category)
+  	})
+
+	// saves idea then returns to list of them
+	$scope.saveIdea = function(idea){
+		$scope.errors = {};
+		var formElements = ['date', 'title', 'description', 'category']
+		var errors = formElements.filter(function(element){return !$scope.idea[element]});
+		if (errors && errors.length){
+			errors.forEach(function(error){
+				$scope.errors[error] = true;
+			});
+		} else {
+			Ideas.update(idea);
+			$state.go('tab.idea-detail', {'ideaId':$scope.idea.$id});
+		}
+	}
 })
 
 
