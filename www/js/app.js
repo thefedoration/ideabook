@@ -12,10 +12,11 @@ var ideabook = angular.module('ideabook', [
   'ideabook.services',
   'loginControllers',
   'ideaControllers',
+  'feedControllers',
   'friendControllers',
   'accountControllers',
 ])
-.run(function($ionicPlatform, $rootScope, $location, Auth, $ionicLoading) {
+.run(function($ionicPlatform, $rootScope, $location, Auth, $ionicLoading, $http) {
 
   $rootScope.firebaseUrl = firebaseUrl;
   $ionicPlatform.ready(function() {
@@ -30,7 +31,13 @@ var ideabook = angular.module('ideabook', [
 
     Auth.$onAuth(function (authData) {
       if (authData) {
+        console.log(authData)
+
+        // set rootscope variables that we might use in our app
         $rootScope.userId = authData.uid;
+        $rootScope.fbId = authData.facebook.id;
+        $rootScope.authToken = authData.facebook.accessToken;
+
         $location.path('/tab/ideas');
       } else {
         $ionicLoading.hide();
@@ -44,6 +51,15 @@ var ideabook = angular.module('ideabook', [
             template: 'Logging Out...'
         });
         Auth.$unauth();
+    }
+
+    $rootScope.numChildren = function(node){
+      if (node){
+        return Object.keys(node).filter(function(key){
+          return (key.indexOf('$') == -1)
+        }).length
+      }
+      return 0
     }
 
     $rootScope.$on("$stateChangeError", function (event, toState, toParams, fromState, fromParams, error) {
@@ -128,7 +144,7 @@ var ideabook = angular.module('ideabook', [
       url: '/friends',
       views: {
         'tab-friends': {
-          templateUrl: 'templates/tab-friends.html',
+          templateUrl: 'templates/friends/friends.html',
           controller: 'FriendsCtrl'
         }
       }
@@ -137,7 +153,7 @@ var ideabook = angular.module('ideabook', [
       url: '/friend/:friendId',
       views: {
         'tab-friends': {
-          templateUrl: 'templates/friend-detail.html',
+          templateUrl: 'templates/friends/friend.html',
           controller: 'FriendDetailCtrl'
         }
       }
@@ -147,8 +163,17 @@ var ideabook = angular.module('ideabook', [
     url: '/account',
     views: {
       'tab-account': {
-        templateUrl: 'templates/tab-account.html',
+        templateUrl: 'templates/account/account.html',
         controller: 'AccountCtrl'
+      }
+    }
+  })
+  .state('tab.feed', {
+    url: '/feed',
+    views: {
+      'tab-feed': {
+        templateUrl: 'templates/feed/feed.html',
+        controller: 'FeedCtrl'
       }
     }
   });
