@@ -31,7 +31,6 @@ var ideabook = angular.module('ideabook', [
 
     Auth.$onAuth(function (authData) {
       if (authData) {
-        console.log(authData)
 
         // set rootscope variables that we might use in our app
         $rootScope.userId = authData.uid;
@@ -182,3 +181,4 @@ var ideabook = angular.module('ideabook', [
   $urlRouterProvider.otherwise('/login');
 
 });
+

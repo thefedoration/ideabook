@@ -2,7 +2,7 @@
   <ion-content>
     <ion-list>
       <div class="item item-avatar" ng-if="currentUser">
-        <img ng-src="{{currentUser.picture}}">
+        <div back-img="'{{currentUser.picture}}'" class="avatar" ng-if="currentUser.picture"></div>
         <h2>{{currentUser.firstName}} {{currentUser.lastName}}</h2>
         <p>{{numChildren(ideas)}} <i class="icon ion-ios7-lightbulb-outline"></i></p>
       </div>

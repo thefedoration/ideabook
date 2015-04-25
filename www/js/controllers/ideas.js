@@ -98,8 +98,19 @@ ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSi
 
 
 .controller('IdeaNewCtrl', function($scope, $rootScope, $firebase, $stateParams, $ionicModal, $state, Ideas, Categories) {
-	$scope.idea = {'date': (new Date())};
+	$scope.idea = {'date': (new Date()), 'privacy':'private'};
 	$scope.categories = Categories.allForUser($rootScope.userId);
+
+
+	// fancy select
+	$scope.countries = [
+    {id: 1, text: 'USA', checked: false, icon: null}, 
+    {id: 2, text: 'France', checked: false, icon: 'https://www.zeendoc.com/wp-content/themes/zeendoc/img/french_flag_small.jpg'}, 
+    {id : 3, text: 'Japan', checked: true, icon: null}];
+  
+	$scope.countries_text_single = 'Choose country';
+	$scope.countries_text_multiple = 'Choose countries';
+	$scope.val =  {single: null, multiple: null};
 
 	// saves idea then returns to list of them
 	$scope.saveIdea = function(idea){

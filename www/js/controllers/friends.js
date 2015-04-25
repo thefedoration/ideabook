@@ -11,17 +11,25 @@ friendControllers.controller('FriendsCtrl', function($scope, $rootScope, $http, 
 	        $http.get('https://graph.facebook.com/'+ $rootScope.fbId +'/friends?access_token='+$rootScope.authToken).then(function(result) {
 	            if (result && result.data && result.data.data){
 	            	var friends = result.data.data;
+	            	var numFriends = friends.length;
+	            	var numLoadedFriends = 0;
 
 	            	friends.forEach(function(friend){
 	            		var user_id = 'facebook:'+String(friend.id);
 	            		$scope.ref.child("users").child(user_id).once('value', function (snapshot) { 
-							var val = snapshot.val();
-							$scope.friends.push(val)
-							console.log(val)
+	            			$scope.$apply(function(){
+	            				numLoadedFriends += 1;
+								var val = snapshot.val();
+								if (val){
+									$scope.friends.push(val)
+								}
+								if (numLoadedFriends==numFriends){
+									$scope.friendsLoaded = true;
+								}
+							});
 						});
 	            	})
-	            	console.log($scope.friends)
-	            	$scope.friendsLoaded = true;
+	            	
 	            }
 	        });
         } else {

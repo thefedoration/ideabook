@@ -21,7 +21,6 @@ loginControllers.controller('LoginCtrl', function($scope, $ionicModal, $state, $
 				ref.child("users").child(authData.uid).once('value', function (snapshot) { 
 					var val = snapshot.val();
 					if (!val){
-						console.log('creating user')
 						ref.child("users").child(authData.uid).set({ 
 							provider: authData.provider, 
 							firstName: authData.facebook.cachedUserProfile.first_name, 
@@ -30,16 +29,14 @@ loginControllers.controller('LoginCtrl', function($scope, $ionicModal, $state, $
 							link: authData.facebook.cachedUserProfile.link, 
 							name: authData.facebook.cachedUserProfile.name, 
 							picture: authData.facebook.cachedUserProfile.picture.data.url, 
+							email: authData.facebook.email
 						}); 
-						if (authData.facebook.email){
-							ref.child("users").child(authData.uid).set({ 
-								email: authData.facebook.email
-							}); 
-						}
 					}
 
 					$ionicLoading.hide(); 
 					$scope.modal.hide(); 
+
+					// ref.child("users").child(authData.uid).once('value', function (snapshot) {console.log(snapshot.val())})
 
 					// creates user's initial categories if they do not have any
 					$scope.createCategoryFixtures(ref, authData);
@@ -47,8 +44,6 @@ loginControllers.controller('LoginCtrl', function($scope, $ionicModal, $state, $
 					$state.go('tab.ideas'); 
 				});
 			}
-		},{
-			scope: "public_profile,email,user_friends"
 		});
 	} 
 
