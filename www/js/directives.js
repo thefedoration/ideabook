@@ -56,6 +56,17 @@ ideabook.directive('fancySelect',
                         scope.modal = modal;
                     });
 
+                    // turns off all other select options
+                    scope.selectOption = function (option) {
+                        jQuery.each(scope.items, function (index, item) {
+                            if (item!==option){
+                                item.checked = false;
+                            } else {
+                                scope.value = item
+                            }
+                        });
+                    }
+
                     /* Validate selection from header bar */
                     scope.validate = function (event) {
                         // Construct selected values and selected text
@@ -76,20 +87,22 @@ ideabook.directive('fancySelect',
                             // Remove trailing comma
                             scope.value = scope.value.substr(0,scope.value.length - 1);
                             scope.text = scope.text.substr(0,scope.text.length - 2);
+                            console.log(scope.value)
+                            console.log(scope.text)
                         }
 
                         // Select first value if not nullable
-                        if (typeof scope.value == 'undefined' || scope.value == '' || scope.value == null ) {
-                            if (scope.allowEmpty == false) {
-                                scope.value = scope.items[0].id;
-                                scope.text = scope.items[0].text;
+                        // if (typeof scope.value == 'undefined' || scope.value == '' || scope.value == null ) {
+                        //     if (scope.allowEmpty == false) {
+                        //         scope.value = scope.items[0].id;
+                        //         scope.text = scope.items[0].text;
 
-                                // Check for multi select
-                                scope.items[0].checked = true;
-                            } else {
-                                scope.text = scope.defaultText;
-                            }
-                        }
+                        //         // Check for multi select
+                        //         scope.items[0].checked = true;
+                        //     } else {
+                        //         scope.text = scope.defaultText;
+                        //     }
+                        // }
 
                         // Hide modal
                         scope.hideItems();
@@ -117,18 +130,18 @@ ideabook.directive('fancySelect',
                     });
 
                     /* Validate single with data */
-                    scope.validateSingle = function (item) {
-                        // Set selected text
-                        scope.text = item.text;
-                        // Set selected value
-                        scope.value = item.id;
-                        // Hide items
-                        scope.hideItems();
-                        // Execute callback function
-                        if (typeof scope.callback == 'function') {
-                            scope.callback (scope.value);
-                        }
-                    }
+                    // scope.validateSingle = function (item) {
+                    //     // Set selected text
+                    //     scope.text = item.text;
+                    //     // Set selected value
+                    //     scope.value = item.id;
+                    //     // Hide items
+                    //     scope.hideItems();
+                    //     // Execute callback function
+                    //     if (typeof scope.callback == 'function') {
+                    //         scope.callback (scope.value);
+                    //     }
+                    // }
                 }
             };
         }

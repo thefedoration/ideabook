@@ -39,10 +39,17 @@ ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSi
 		$scope.categories = Categories.allForUser($rootScope.userId);
 	}
 
+	// sets active category
 	$scope.filterCategory = function(category){
 		$scope.activeCategory = category;
 		$rootScope.activeCategory = category;
 	}
+
+	// returns value to order the list of ideas by. goes by date first, then timestamp. reverse order
+	$scope.orderByDate = function(idea) {
+		var date = (new Date(idea.date)).getTime()
+		return 0 - parseInt(String(date)+String(idea.created))
+	};
 
 	// deletes category if it has no ideas in it
 	$scope.deleteCategory = function(category) {
@@ -103,14 +110,14 @@ ideaControllers.controller('IdeasAllCtrl', function($scope, $rootScope, $ionicSi
 
 
 	// fancy select
-	$scope.countries = [
-    {id: 1, text: 'USA', checked: false, icon: null}, 
-    {id: 2, text: 'France', checked: false, icon: 'https://www.zeendoc.com/wp-content/themes/zeendoc/img/french_flag_small.jpg'}, 
-    {id : 3, text: 'Japan', checked: true, icon: null}];
-  
-	$scope.countries_text_single = 'Choose country';
-	$scope.countries_text_multiple = 'Choose countries';
-	$scope.val =  {single: null, multiple: null};
+	$scope.privacyOptions = [
+	    {option:'private', checked: true, icon: 'ion-ios7-locked'}, 
+	    {option:'all friends', checked: false, icon: 'ion-earth'}, 
+	    {option:'selected friends', checked: false, icon: 'ion-ios7-people', friends:[]}
+    ];
+    $scope.privacy = $scope.privacyOptions.filter(function(item){
+    	return item.checked
+    })[0];
 
 	// saves idea then returns to list of them
 	$scope.saveIdea = function(idea){

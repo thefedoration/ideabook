@@ -20,7 +20,7 @@ loginControllers.controller('LoginCtrl', function($scope, $ionicModal, $state, $
 			} else {
 				ref.child("users").child(authData.uid).once('value', function (snapshot) { 
 					var val = snapshot.val();
-					if (!val){
+					if (!val || !val.fbId){
 						ref.child("users").child(authData.uid).set({ 
 							provider: authData.provider, 
 							firstName: authData.facebook.cachedUserProfile.first_name, 

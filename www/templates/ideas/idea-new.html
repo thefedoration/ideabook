@@ -1,4 +1,9 @@
 <ion-view view-title="Edit Idea">
+	<ion-nav-buttons side="right">
+    	<button class="button button-icon" ng-click="saveIdea(idea)">
+      		<i class="icon ion-ios7-plus-outline positive"></i>
+    	</button>
+  	</ion-nav-buttons>
 	<ion-content class="padding">
 		<div class="list">
 			<label class="item item-input item-stacked-label" ng-class="{error: errors.date, noError:idea.date}">
@@ -22,50 +27,38 @@
 		</div>
 
 		<div class="list">
-			<fancy-select header-text="Single" allow-empty='false' value="val.single" text="countries_text_single" items="countries"></fancy-select>
-            <fancy-select header-text="Multiple" allow-empty='false' value="val.multiple" text="countries_text_multiple" items="countries" multi-select="true"></fancy-select>
+            <fancy-select header-text="Select Privacy Settings" allow-empty='false' value="privacy" text="privacy" items="privacyOptions" multi-select="true"></fancy-select>
 		</div>
 
 	    <script id="fancy-select.html" type="text/ng-template">
 		    <div class="list">
 				<label class="item item-input item-stacked-label" ng-click="showItems($event)">
 					<span class="input-label positive">Privacy Settings</span>
-					<div>{{text}}</div>
+					<div style="font-size:14px;">
+						<i class="{{value.icon}}" style="margin-right:10px;"></i>{{value.option}}
+					</div>
 				</label>
 			</div>
 	    </script>
 
-          <script id="fancy-select-items.html" type="text/ng-template">
+        <script id="fancy-select-items.html" type="text/ng-template">
             <ion-view class="fancy-select-items modal">
-              <ion-header-bar class="bar-positive">
-                <button ng-click="hideItems()" class="button button-positive button-icon ion-ios7-arrow-back"></button>
-                <h1 class="title">{{headerText}}</h1>
-                <button ng-click="validate()" class="button button-positive button-icon ion-checkmark"></button>
-              </ion-header-bar>
-              <ion-content>
-                <div class="list">
-
-                  <ion-toggle ng-repeat="item in items" ng-if="multiSelect" ng-checked="item.checked" ng-model="item.checked" class="item item-text-wrap">
-                    <div class="fancy-select-icon" ng-if="item.icon != null">
-                      <img ng-src="{{item.icon}}" />
-                    </div>
-                    {{item.text}}
-                  </ion-toggle>
-
-                  <label
-                         ng-repeat="item in items"
-                         ng-if="!multiSelect"
-                         class="item item-text-wrap"
-                         ng-click='validateSingle(item)'>
-                    <div class="fancy-select-icon" ng-if="item.icon != null">
-                      <i class="icon-{{item.text}}" style="background-image: url({{item.icon}})"></i>
-                    </div>
-                    {{item.text}}
-                  </label>
-                </div>
-              </ion-content>
+              	<ion-header-bar class="bar-positive">
+                	<h1 class="title">{{headerText}}</h1>
+                	<button ng-click="hideItems()" class="button button-positive button-icon ion-checkmark"></button>
+             	 </ion-header-bar>
+              	<ion-content>
+                	<div class="list">
+                  		<ion-toggle ng-repeat="item in items" ng-if="multiSelect" ng-checked="item.checked" ng-model="item.checked" class="item item-text-wrap" ng-click="selectOption(item)">
+                    		<div class="fancy-select-icon" ng-if="item.icon!=null">
+                      			<i class="{{item.icon}}"></i>
+                    		</div>
+                    		{{item.option}}
+                  		</ion-toggle>
+                	</div>
+             	 </ion-content>
             </ion-view>
-          </script>
+        </script>
 
 
 		<button class="button button-block button-positive" ng-click="saveIdea(idea)">Save</button>

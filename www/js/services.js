@@ -17,7 +17,7 @@ angular.module('ideabook.services', ['firebase'])
 
   return {
     all: function() {
-      return $firebase(ideasRef.orderByChild("created").limitToLast(20)).$asArray(); 
+      // return $firebase(ideasRef.orderByChild("created").limitToLast(20)).$asArray(); 
     },
     allForUser: function(userId) {
       return $firebase(ideasRef.orderByChild("userId").startAt(userId).endAt(userId)).$asArray()
@@ -105,11 +105,16 @@ angular.module('ideabook.services', ['firebase'])
 
 .factory('Users', function($window, $firebase, $rootScope, $q) {
   var ref = new Firebase($rootScope.firebaseUrl); 
+  var ideasRef = ref.child('ideas');
   var usersRef = ref.child('users');
+  var categoriesRef = ref.child('categories');
 
   return {
     get: function(userId) {
       return $firebase(usersRef.child(userId)).$asObject();
     },
+    sync: function(userId) {
+      // implement function to sync references to user, ideas, and categories
+    }
   }
 })
